@@ -69,6 +69,59 @@ To enable email submissions from the registration forms:
 
 See `website/README.md` for detailed setup instructions.
 
+## PayPal Payment Integration
+
+The event ticket purchasing system is integrated with PayPal for secure payments.
+
+### Setup Instructions
+
+1. **Create a PayPal Developer Account**
+   - Go to [PayPal Developer](https://developer.paypal.com/)
+   - Sign in or create an account
+   - Navigate to "Dashboard" → "Apps & Credentials"
+
+2. **Get Your Client ID**
+   - In Sandbox mode (for testing):
+     - Copy the "Client ID" from your Sandbox app
+   - In Live mode (for production):
+     - Switch to "Live" tab and copy your live "Client ID"
+
+3. **Configure Environment Variable**
+   - Create a `.env` file in the `website/` directory:
+     ```bash
+     REACT_APP_PAYPAL_CLIENT_ID=your_paypal_client_id_here
+     ```
+   - For testing, use your Sandbox Client ID
+   - For production, use your Live Client ID
+
+4. **Test the Integration**
+   - Start the development server: `npm start`
+   - Navigate to any event page
+   - Click "Get Tickets" and complete the payment flow
+   - Use [PayPal Sandbox test accounts](https://developer.paypal.com/tools/sandbox/accounts/) for testing
+
+### Testing with Sandbox
+
+PayPal provides test buyer accounts for testing:
+- **Email**: sb-buyer@personal.example.com (check your sandbox accounts)
+- **Password**: Provided in PayPal Developer Dashboard
+
+### Going Live
+
+1. Switch from Sandbox to Live credentials in your `.env` file
+2. Complete PayPal's business verification process
+3. Update `REACT_APP_PAYPAL_CLIENT_ID` with your live Client ID
+4. Rebuild and deploy your application
+
+### Features
+
+- ✅ Secure PayPal payment processing
+- ✅ Real-time payment confirmation
+- ✅ Order details with customer information
+- ✅ Multiple ticket quantity support
+- ✅ Success/error handling
+- ✅ Payment status tracking
+
 ## Project Structure
 
 ```

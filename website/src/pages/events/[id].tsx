@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
 import styles from './event.module.css';
 
 // Event data (same as homepage)
@@ -66,6 +67,13 @@ export default function EventDetail(): JSX.Element {
   
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [showTicketModal, setShowTicketModal] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+  });
+  const [showPayPal, setShowPayPal] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
 
   if (!event) {
     return (
@@ -81,6 +89,51 @@ export default function EventDetail(): JSX.Element {
 
   const handleGetTickets = () => {
     setShowTicketModal(true);
+    setShowPayPal(false);
+    setPaymentStatus('idle');
+  };
+
+  const handleCustomerInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomerInfo({
+      ...customerInfo,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleProceedToPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customerInfo.fullName && customerInfo.email && customerInfo.phone) {
+      setShowPayPal(true);
+      setPaymentStatus('processing');
+    }
+  };
+
+  const handlePaymentSuccess = (details: any) => {
+    console.log('Payment completed:', details);
+    setPaymentStatus('success');
+    
+    // Send confirmation email (you can integrate with your backend here)
+    const orderData = {
+      orderID: details.id,
+      customerName: customerInfo.fullName,
+      customerEmail: customerInfo.email,
+      customerPhone: customerInfo.phone,
+      eventTitle: event.title,
+      eventDate: event.date,
+      eventTime: event.time,
+      eventVenue: event.venue,
+      ticketQuantity,
+      totalAmount: totalPrice,
+      paymentStatus: details.status,
+    };
+    
+    console.log('Order data for confirmation:', orderData);
+    // TODO: Send this data to your backend to trigger confirmation email
+  };
+
+  const handlePaymentError = (error: any) => {
+    console.error('Payment failed:', error);
+    setPaymentStatus('error');
   };
 
   const priceValue = parseFloat(event.price.replace('$', ''));
@@ -201,44 +254,129 @@ export default function EventDetail(): JSX.Element {
                 onClick={() => setShowTicketModal(false)}>
                 ×
               </button>
-              <h2>Get Tickets</h2>
-              <div className={styles.modalBody}>
-                <div className={styles.ticketSelection}>
-                  <label>Number of Tickets:</label>
-                  <div className={styles.quantityControl}>
-                    <button 
-                      onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
-                      disabled={ticketQuantity <= 1}>
-                      -
-                    </button>
-                    <span>{ticketQuantity}</span>
-                    <button 
-                      onClick={() => setTicketQuantity(Math.min(10, ticketQuantity + 1))}
-                      disabled={ticketQuantity >= 10}>
-                      +
-                    </button>
+              
+              {paymentStatus === 'success' ? (
+                <div className={styles.successMessage}>
+                  <div className={styles.successIcon}>✓</div>
+                  <h2>Payment Successful!</h2>
+                  <p>Thank you for your purchase, {customerInfo.fullName}!</p>
+                  <p>A confirmation email has been sent to <strong>{customerInfo.email}</strong></p>
+                  <div className={styles.orderSummary}>
+                    <h3>Order Details</h3>
+                    <p><strong>Event:</strong> {event.title}</p>
+                    <p><strong>Date:</strong> {event.date}</p>
+                    <p><strong>Time:</strong> {event.time}</p>
+                    <p><strong>Venue:</strong> {event.venue}</p>
+                    <p><strong>Tickets:</strong> {ticketQuantity}</p>
+                    <p><strong>Total Paid:</strong> ${totalPrice.toFixed(2)}</p>
                   </div>
-                </div>
-
-                <div className={styles.totalPrice}>
-                  <span>Total:</span>
-                  <span className={styles.total}>${totalPrice.toFixed(2)}</span>
-                </div>
-
-                <form className={styles.ticketForm}>
-                  <input type="text" placeholder="Full Name" required />
-                  <input type="email" placeholder="Email Address" required />
-                  <input type="tel" placeholder="Phone Number" required />
-                  
-                  <button type="submit" className={styles.submitButton}>
-                    Proceed to Payment
+                  <button 
+                    className={styles.submitButton}
+                    onClick={() => setShowTicketModal(false)}>
+                    Close
                   </button>
-                </form>
+                </div>
+              ) : paymentStatus === 'error' ? (
+                <div className={styles.errorMessage}>
+                  <h2>Payment Failed</h2>
+                  <p>We couldn't process your payment. Please try again.</p>
+                  <button 
+                    className={styles.submitButton}
+                    onClick={() => {
+                      setPaymentStatus('idle');
+                      setShowPayPal(false);
+                    }}>
+                    Try Again
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <h2>Get Tickets</h2>
+                  <div className={styles.modalBody}>
+                    <div className={styles.ticketSelection}>
+                      <label>Number of Tickets:</label>
+                      <div className={styles.quantityControl}>
+                        <button 
+                          onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
+                          disabled={ticketQuantity <= 1 || showPayPal}>
+                          -
+                        </button>
+                        <span>{ticketQuantity}</span>
+                        <button 
+                          onClick={() => setTicketQuantity(Math.min(10, ticketQuantity + 1))}
+                          disabled={ticketQuantity >= 10 || showPayPal}>
+                          +
+                        </button>
+                      </div>
+                    </div>
 
-                <p className={styles.ticketNote}>
-                  After clicking "Proceed to Payment", you'll be redirected to our secure payment partner to complete your purchase.
-                </p>
-              </div>
+                    <div className={styles.totalPrice}>
+                      <span>Total:</span>
+                      <span className={styles.total}>${totalPrice.toFixed(2)}</span>
+                    </div>
+
+                    {!showPayPal ? (
+                      <form className={styles.ticketForm} onSubmit={handleProceedToPayment}>
+                        <input 
+                          type="text" 
+                          name="fullName"
+                          placeholder="Full Name" 
+                          value={customerInfo.fullName}
+                          onChange={handleCustomerInfoChange}
+                          required 
+                        />
+                        <input 
+                          type="email" 
+                          name="email"
+                          placeholder="Email Address" 
+                          value={customerInfo.email}
+                          onChange={handleCustomerInfoChange}
+                          required 
+                        />
+                        <input 
+                          type="tel" 
+                          name="phone"
+                          placeholder="Phone Number" 
+                          value={customerInfo.phone}
+                          onChange={handleCustomerInfoChange}
+                          required 
+                        />
+                        
+                        <button type="submit" className={styles.submitButton}>
+                          Proceed to Payment
+                        </button>
+                      </form>
+                    ) : (
+                      <div className={styles.paypalContainer}>
+                        <p className={styles.paymentInfo}>
+                          Complete your payment securely with PayPal
+                        </p>
+                        <PayPalCheckout
+                          amount={totalPrice}
+                          eventTitle={event.title}
+                          ticketQuantity={ticketQuantity}
+                          onSuccess={handlePaymentSuccess}
+                          onError={handlePaymentError}
+                        />
+                        <button 
+                          className={styles.backButton}
+                          onClick={() => {
+                            setShowPayPal(false);
+                            setPaymentStatus('idle');
+                          }}>
+                          ← Back to Details
+                        </button>
+                      </div>
+                    )}
+
+                    {!showPayPal && (
+                      <p className={styles.ticketNote}>
+                        After clicking "Proceed to Payment", you'll be able to pay securely with PayPal.
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

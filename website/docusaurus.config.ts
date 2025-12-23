@@ -14,6 +14,11 @@ const config: Config = {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
+  // Custom fields for client-side access
+  customFields: {
+    paypalClientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
+  },
+
   // Set the production url of your site here
   url: 'https://your-docusaurus-site.example.com',
   // Set the /<baseUrl>/ pathname under which your site is served
@@ -61,7 +66,9 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: '/', label: 'Home', position: 'left'},
+        {to: '/', label: 'Upcoming Event', position: 'left'},
+        {to: '/about', label: 'About Us', position: 'left'},
+        {to: '/contact', label: 'Contact Us', position: 'left'},
         {to: '/register/host', label: 'Become a Host', position: 'left'},
         {to: '/register/performer', label: 'Register as Performer', position: 'left'},
       ],

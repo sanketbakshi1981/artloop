@@ -365,6 +365,98 @@
   font-style: italic;
 }
 
+.paypalContainer {
+  margin-top: 1rem;
+}
+
+.paymentInfo {
+  text-align: center;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.backButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: #f7fafc;
+}
+
+.successMessage {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.successMessage h2 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.successMessage p {
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.orderSummary {
+  background: #f7fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.orderSummary h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #2d3748;
+}
+
+.orderSummary p {
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.errorMessage h2 {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}
+
+.errorMessage p {
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+}
+
 .notFound {
   text-align: center;
   padding: 4rem 2rem;
