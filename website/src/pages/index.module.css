@@ -103,7 +103,7 @@
 
 /* Events Section - Minimalist Elegance */
 .eventsSection {
-  padding: 6rem 0 7rem;
+  padding: 3rem 0 5rem;
   background: #fafbfc;
   position: relative;
 }
@@ -126,7 +126,7 @@
   width: 60px;
   height: 3px;
   background: linear-gradient(90deg, #667eea 0%, #f093fb 100%);
-  margin: 1.5rem auto 4rem;
+  margin: 1.5rem auto 2.5rem;
   border-radius: 3px;
 }
 
@@ -279,6 +279,282 @@
   box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
 }
 
+/* Registration Section */
+.registrationSection {
+  padding: 6rem 0;
+  background: 
+    radial-gradient(circle at 20% 0%, rgba(102, 126, 234, 0.8) 0%, transparent 50%),
+    radial-gradient(circle at 80% 100%, rgba(240, 147, 251, 0.8) 0%, transparent 50%),
+    linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.registrationSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 200% 200%, 200% 200%;
+  background-position: 50% 50%;
+  animation: floatingStars 60s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+@keyframes floatingStars {
+  0%, 100% { background-position: 0% 0%, 10% 10%, 20% 20%, 30% 30%, 40% 40%, 50% 50%; }
+  50% { background-position: 100% 100%, 90% 90%, 80% 80%, 70% 70%, 60% 60%, 50% 50%; }
+}
+
+.registrationSection::after {
+  content: '♪ ♫ ♩ ♬';
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.05);
+  animation: floatMusic 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes floatMusic {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(10deg); }
+}
+
+.registrationTitle {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f093fb 50%, #667eea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.registrationSubtitle {
+  text-align: center;
+  font-size: 1.25rem;
+  margin-bottom: 3.5rem;
+  color: rgba(255, 255, 255, 0.95);
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+  font-style: italic;
+  font-weight: 300;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.registrationButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.registrationCard {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  text-decoration: none;
+  color: #1a202c;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.registrationCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.registrationCard:hover::before {
+  left: 100%;
+}
+
+.registrationCard:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4), 0 0 40px rgba(240, 147, 251, 0.2);
+  border-color: rgba(240, 147, 251, 0.5);
+  text-decoration: none;
+  color: #1a202c;
+  background: rgba(255, 255, 255, 1);
+}
+
+.registrationIcon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.registrationIcon::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+  filter: blur(10px);
+}
+
+.registrationCard:hover .registrationIcon::before {
+  opacity: 1;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 0.4; }
+}
+
+.registrationIcon svg {
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.registrationCard:hover .registrationIcon {
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 12px 36px rgba(240, 147, 251, 0.6);
+}
+
+.registrationCard h3 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.registrationCard h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea 0%, #f093fb 100%);
+  transition: width 0.4s ease;
+  border-radius: 3px;
+}
+
+.registrationCard:hover h3::after {
+  width: 60px;
+}
+
+.registrationCard p {
+  font-size: 1.0625rem;
+  color: #475569;
+  line-height: 1.75;
+  margin: 0;
+  margin-top: 0.5rem;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.registrationCard:hover p {
+  color: #334155;
+}
+
+.registrationCardButton {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.875rem;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.registrationCardButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.registrationCardButton:hover::before {
+  left: 0;
+}
+
+.registrationCardButton:hover {
+  color: white;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(118, 75, 162, 0.5);
+}
+
 /* Responsive Design */
 @media screen and (max-width: 996px) {
   .eventsGrid {
@@ -297,6 +573,19 @@
 
   .sectionTitle {
     font-size: 2.25rem;
+  }
+
+  .registrationButtons {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .registrationTitle {
+    font-size: 2rem;
+  }
+
+  .registrationSubtitle {
+    font-size: 1rem;
   }
 }
 
@@ -338,5 +627,17 @@
 
   .eventsSection {
     padding: 4rem 0 5rem;
+  }
+
+  .registrationButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .registrationSection {
+    padding: 3rem 0;
+  }
+
+  .registrationCard {
+    padding: 2rem 1.5rem;
   }
 }

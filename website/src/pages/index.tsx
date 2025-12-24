@@ -8,12 +8,12 @@ import styles from './index.module.css';
 const upcomingEvents = [
   {
     id: 1,
-    title: 'Jazz & Wine Evening',
-    date: 'January 15, 2026',
+    title: 'Acoustic Bollywood Night',
+    date: 'January 17, 2026',
     time: '7:00 PM - 10:00 PM',
-    venue: 'The Grand Hall',
-    performer: 'Sarah Mitchell Quartet',
-    description: 'An intimate evening of smooth jazz paired with premium wines',
+    venue: '18 Pemberton Dr NJ',
+    performer: 'Vikram Kumar',
+    description: 'A fun evening of your favorite bollywood tunes performed live on acoustic guitar',
     image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80',
     price: '$85',
   },
@@ -96,18 +96,6 @@ function HomepageHeader() {
       <div className="container">
         <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
         <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className={styles.button + ' ' + styles.buttonPrimary}
-            to="/register/host">
-            Become a Host
-          </Link>
-          <Link
-            className={styles.button + ' ' + styles.buttonSecondary}
-            to="/register/performer">
-            Register as Performer
-          </Link>
-        </div>
       </div>
     </header>
   );
@@ -128,6 +116,48 @@ export default function Home(): JSX.Element {
               {upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.registrationSection}>
+          <div className="container">
+            <h2 className={styles.registrationTitle}>Where Art Meets Opportunity</h2>
+            <p className={styles.registrationSubtitle}>
+              Transform spaces into stages, moments into memories, and passion into performance
+            </p>
+            <div className={styles.registrationButtons}>
+              <div className={styles.registrationCard}>
+                <div className={styles.registrationIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                </div>
+                <h3>Invite Experiences</h3>
+                <p>Open your space to the magic of live performance. Create intimate concerts, acoustic sessions, or full-scale productions that transform your venue into a cultural destination</p>
+                <Link
+                  className={styles.registrationCardButton}
+                  to="/register/host">
+                  Become a Host
+                </Link>
+              </div>
+              <div className={styles.registrationCard}>
+                <div className={styles.registrationIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                  </svg>
+                </div>
+                <h3>Share Your Artistry</h3>
+                <p>From jazz to classical, rock to spoken word—your talent deserves an audience. Connect with venues hungry for authentic live performance and turn your art into unforgettable experiences</p>
+                <Link
+                  className={styles.registrationCardButton}
+                  to="/register/performer">
+                  Become a Performer
+                </Link>
+              </div>
             </div>
           </div>
         </section>

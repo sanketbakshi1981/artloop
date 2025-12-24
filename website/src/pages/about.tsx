@@ -6,7 +6,7 @@ export default function About(): JSX.Element {
   return (
     <Layout
       title="About Us"
-      description="Learn more about ArtLoop - Where Art Comes Alive">
+      description="Learn more about ArtLoop - Closing the loop between art and performance">
       <main>
         <div className={styles.container} style={{ padding: '2rem' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
