@@ -62,7 +62,7 @@ const config: Config = {
       title: 'ArtLoop',
       logo: {
         alt: 'ArtLoop Logo',
-        src: 'img/logo.svg',
+        src: 'img/ArtLoop-Logo-Small-Transparent.png',
       },
       items: [
         {to: '/', label: 'Upcoming Event', position: 'left'},
