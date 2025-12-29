@@ -26,6 +26,28 @@
   50% { transform: translate(-5%, -5%) rotate(5deg); }
 }
 
+.heroLogoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.heroLogo {
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.15));
+}
+
+@media screen and (max-width: 768px) {
+  .heroLogo {
+    max-width: 350px;
+  }
+}
+
 .heroTitle {
   font-size: 5rem;
   font-weight: 900;

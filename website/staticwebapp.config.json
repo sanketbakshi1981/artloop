@@ -1,19 +1,26 @@
 {
-  "routes": [
-    {
-      "route": "/*",
-      "serve": "/index.html",
-      "statusCode": 200
-    }
-  ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif,ico}", "/css/*"]
+    "exclude": [
+      "/img/*",
+      "/assets/*",
+      "*.{css,js,json,png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot}"
+    ]
   },
   "mimeTypes": {
-    ".json": "application/json"
+    ".json": "application/json",
+    ".js": "text/javascript",
+    ".css": "text/css"
   },
   "globalHeaders": {
-    "cache-control": "must-revalidate, max-age=3600"
+    "cache-control": "public, max-age=3600",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block"
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
   }
 }
