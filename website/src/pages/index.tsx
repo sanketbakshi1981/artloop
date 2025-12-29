@@ -94,7 +94,7 @@ function HomepageHeader() {
   return (
     <header className={styles.heroBanner}>
       <div className="container">
-        <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
+        <h1 className={styles.heroTitle}>ArtLoop</h1>
         <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
       </div>
     </header>
