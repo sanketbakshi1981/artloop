@@ -246,10 +246,10 @@ export default function EventDetail(): JSX.Element {
                 <div className={styles.shareSection}>
                   <p>Share this event:</p>
                   <div className={styles.shareButtons}>
-                    <a href={`https://twitter.com/intent/tweet?text=Check out ${event.title}&url=${window.location.href}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://twitter.com/intent/tweet?text=Check out ${event.title}&url=${typeof window !== 'undefined' ? window.location.href : ''}`} target="_blank" rel="noopener noreferrer">
                       Twitter
                     </a>
-                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? window.location.href : ''}`} target="_blank" rel="noopener noreferrer">
                       Facebook
                     </a>
                   </div>
