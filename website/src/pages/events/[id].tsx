@@ -3,6 +3,7 @@ import { useLocation } from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
+import { sendOrderConfirmationEmail, OrderData } from '../../services/emailService';
 import styles from './event.module.css';
 
 // Event data (same as homepage)
@@ -26,20 +27,20 @@ const eventsData = {
   },
   2: {
     id: 2,
-    title: 'Acoustic Sunset Session',
+    title: 'Indian Classical Music Evening',
     date: 'January 28, 2026',
     time: '6:00 PM - 9:00 PM',
     venue: 'Rooftop Terrace',
     venueAddress: '456 Skyline Avenue, Rooftop Level',
-    performer: 'Alex Rivera',
-    performerBio: 'Singer-songwriter known for heartfelt acoustic performances and original compositions.',
-    description: 'Soulful acoustic melodies as the sun sets over the city',
-    fullDescription: 'Experience the magic of live acoustic music as the sun paints the sky in brilliant colors. Alex Rivera brings soulful melodies and original songs to our stunning rooftop venue. Enjoy craft cocktails and light bites as you take in breathtaking city views.',
+    performer: 'Aaryav Bakshi',
+    performerBio: 'Accomplished Indian classical performer bringing the rich traditions of Hindustani music to contemporary audiences.',
+    description: 'An enchanting evening of Indian classical music',
+    fullDescription: 'Immerse yourself in the mesmerizing world of Indian classical music with Aaryav Bakshi. Experience the depth and beauty of Hindustani classical traditions in an intimate rooftop setting. Enjoy traditional Indian refreshments and light bites as you witness this captivating performance.',
     image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80',
     price: '$65',
     capacity: '75 guests',
     dresscode: 'Casual',
-    includes: ['Welcome cocktail', 'Appetizer selection', 'Premium seating', 'Photo opportunities'],
+    includes: ['Welcome drink', 'Indian appetizers', 'Premium seating', 'Photo opportunities'],
   },
   3: {
     id: 3,
@@ -108,12 +109,12 @@ export default function EventDetail(): JSX.Element {
     }
   };
 
-  const handlePaymentSuccess = (details: any) => {
+  const handlePaymentSuccess = async (details: any) => {
     console.log('Payment completed:', details);
     setPaymentStatus('success');
     
-    // Send confirmation email (you can integrate with your backend here)
-    const orderData = {
+    // Prepare order data for email
+    const orderData: OrderData = {
       orderID: details.id,
       customerName: customerInfo.fullName,
       customerEmail: customerInfo.email,
@@ -128,7 +129,19 @@ export default function EventDetail(): JSX.Element {
     };
     
     console.log('Order data for confirmation:', orderData);
-    // TODO: Send this data to your backend to trigger confirmation email
+    
+    // Send confirmation emails to customer and admins
+    try {
+      const emailSent = await sendOrderConfirmationEmail(orderData);
+      if (emailSent) {
+        console.log('Confirmation emails sent successfully');
+      } else {
+        console.warn('Failed to send confirmation emails, but payment was successful');
+      }
+    } catch (error) {
+      console.error('Error sending confirmation emails:', error);
+      // Don't fail the payment flow if email sending fails
+    }
   };
 
   const handlePaymentError = (error: any) => {

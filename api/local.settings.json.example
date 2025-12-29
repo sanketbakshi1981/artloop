@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "SENDGRID_API_KEY": "your_sendgrid_api_key_here",
+    "FROM_EMAIL": "noreply@artloop.com"
+  }
+}

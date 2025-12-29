@@ -1,0 +1,13 @@
+{
+  "name": "artloop-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for ArtLoop",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {}
+}
