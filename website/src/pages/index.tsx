@@ -15,7 +15,7 @@ const upcomingEvents = [
     performer: 'Vikram Kumar',
     description: 'A fun evening of your favorite bollywood tunes performed live on acoustic guitar',
     image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80',
-    price: '$85',
+    price: '$35',
   },
   {
     id: 2,
