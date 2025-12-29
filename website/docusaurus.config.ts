@@ -59,10 +59,10 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'ArtLoop',
+      title: '',
       logo: {
         alt: 'ArtLoop Logo',
-        src: 'img/ArtLoop-Logo-Small-Transparent.png',
+        src: 'img/ArtLoop-Logo-Text-Transparent.png',
       },
       items: [
         {to: '/', label: 'Upcoming Event', position: 'left'},
