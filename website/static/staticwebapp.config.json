@@ -1,4 +1,10 @@
 {
+  "routes": [
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous", "authenticated"]
+    }
+  ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
@@ -16,11 +22,22 @@
     "cache-control": "public, max-age=3600",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block"
+    "X-XSS-Protection": "1; mode=block",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
   },
   "responseOverrides": {
     "404": {
       "rewrite": "/404.html"
     }
+  },
+  "platform": {
+    "apiRuntime": "node:20"
+  },
+  "forwardingGateway": {
+    "allowedForwardedHosts": [
+      "artloop.us",
+      "www.artloop.us"
+    ],
+    "requiredHeaders": {}
   }
 }
