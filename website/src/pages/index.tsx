@@ -9,12 +9,12 @@ const upcomingEvents = [
   {
     id: 1,
     title: 'Acoustic Bollywood Night',
-    date: 'January 17, 2026',
+    date: 'January 18, 2026',
     time: '7:00 PM - 10:00 PM',
     venue: '18 Pemberton Dr, Matawan, NJ',
     performer: 'Vikram Kumar',
     description: 'A fun evening of your favorite bollywood tunes performed live on acoustic guitar',
-    image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80',
+    image: '/eventimg/Jan2025/Jan-18-Vikram1.jpeg',
     price: '$35',
   },
   {
