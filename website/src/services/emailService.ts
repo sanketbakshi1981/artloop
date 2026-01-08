@@ -25,10 +25,13 @@ export interface RegistrationData {
   hostEmail: string;
 }
 
-export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<boolean> {
+export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {
   try {
     // Get the API endpoint from environment or use default
     const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || '/api/send-email';
+    
+    console.log('🔄 Sending order confirmation email to:', apiEndpoint);
+    console.log('📧 Order data:', orderData);
     
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -38,25 +41,49 @@ export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<
       body: JSON.stringify(orderData),
     });
 
+    console.log('📡 Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Email service error:', errorData);
-      return false;
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: 'Failed to parse error response', status: response.status };
+      }
+      console.error('❌ Email service error:', errorData);
+      return {
+        success: false,
+        error: errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+        details: errorData
+      };
     }
 
     const result = await response.json();
-    console.log('Email sent successfully:', result);
-    return true;
+    console.log('✅ Email sent successfully:', result);
+    return { success: true };
   } catch (error) {
-    console.error('Failed to send confirmation email:', error);
-    return false;
+    console.error('❌ Failed to send confirmation email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: error
+    };
   }
 }
 
-export async function sendRegistrationEmail(registrationData: RegistrationData): Promise<boolean> {
+export interface EmailResult {
+  success: boolean;
+  error?: string;
+  details?: any;
+}
+
+export async function sendRegistrationEmail(registrationData: RegistrationData): Promise<EmailResult> {
   try {
     // Get the API endpoint from environment or use default
     const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || '/api/send-email';
+    
+    console.log('🔄 Sending registration email to:', apiEndpoint);
+    console.log('📧 Registration data:', registrationData);
     
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -71,17 +98,32 @@ export async function sendRegistrationEmail(registrationData: RegistrationData):
       }),
     });
 
+    console.log('📡 Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Registration email service error:', errorData);
-      return false;
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: 'Failed to parse error response', status: response.status };
+      }
+      console.error('❌ Registration email service error:', errorData);
+      return {
+        success: false,
+        error: errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+        details: errorData
+      };
     }
 
     const result = await response.json();
-    console.log('Registration email sent successfully:', result);
-    return true;
+    console.log('✅ Registration email sent successfully:', result);
+    return { success: true };
   } catch (error) {
-    console.error('Failed to send registration email:', error);
-    return false;
+    console.error('❌ Failed to send registration email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: error
+    };
   }
 }

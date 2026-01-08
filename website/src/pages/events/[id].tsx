@@ -3,7 +3,7 @@ import { useLocation } from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
-import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData } from '../../services/emailService';
+import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData, EmailResult } from '../../services/emailService';
 import styles from './event.module.css';
 import { getEventById, isEventFree, isInviteOnly, validateInviteCode } from '../../data/eventsData';
 
@@ -91,16 +91,20 @@ export default function EventDetail(): JSX.Element {
       
       // Send registration emails to customer and host
       try {
-        const emailSent = await sendRegistrationEmail(registrationData);
-        if (emailSent) {
+        const result = await sendRegistrationEmail(registrationData);
+        if (result.success) {
           console.log('Registration emails sent successfully');
           setPaymentStatus('success');
         } else {
-          console.warn('Failed to send registration emails');
+          console.error('❌ Registration failed:', result.error);
+          console.error('Error details:', result.details);
+          alert(`Registration failed: ${result.error || 'Unknown error'}. Check the browser console for details (F12).`);
           setPaymentStatus('error');
         }
       } catch (error) {
-        console.error('Error sending registration emails:', error);
+        console.error('❌ Error sending registration emails:', error);
+        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+        alert(`Registration error: ${error instanceof Error ? error.message : 'Unknown error'}. Check the browser console for details (F12).`);
         setPaymentStatus('error');
       }
     }
@@ -129,11 +133,12 @@ export default function EventDetail(): JSX.Element {
     
     // Send confirmation emails to customer and admins
     try {
-      const emailSent = await sendOrderConfirmationEmail(orderData);
-      if (emailSent) {
+      const result = await sendOrderConfirmationEmail(orderData);
+      if (result.success) {
         console.log('Confirmation emails sent successfully');
       } else {
-        console.warn('Failed to send confirmation emails, but payment was successful');
+        console.warn('⚠️ Failed to send confirmation emails, but payment was successful');
+        console.error('Email error:', result.error, result.details);
       }
     } catch (error) {
       console.error('Error sending confirmation emails:', error);
