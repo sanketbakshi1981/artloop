@@ -25,6 +25,12 @@ export interface RegistrationData {
   hostEmail: string;
 }
 
+export interface EmailResult {
+  success: boolean;
+  error?: string;
+  details?: any;
+}
+
 export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {
   try {
     // Get the API endpoint from environment or use default
@@ -69,12 +75,6 @@ export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<
       details: error
     };
   }
-}
-
-export interface EmailResult {
-  success: boolean;
-  error?: string;
-  details?: any;
 }
 
 export async function sendRegistrationEmail(registrationData: RegistrationData): Promise<EmailResult> {
