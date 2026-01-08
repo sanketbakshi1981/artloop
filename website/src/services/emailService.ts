@@ -33,8 +33,9 @@ export interface EmailResult {
 
 export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {
   try {
-    // Get the API endpoint from environment or use default
-    const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || '/api/send-email';
+    // For Azure Static Web Apps, API endpoints are automatically available at /api/
+    // Custom endpoint can be configured via window object if needed
+    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) || '/api/send-email';
     
     console.log('🔄 Sending order confirmation email to:', apiEndpoint);
     console.log('📧 Order data:', orderData);
@@ -79,8 +80,9 @@ export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<
 
 export async function sendRegistrationEmail(registrationData: RegistrationData): Promise<EmailResult> {
   try {
-    // Get the API endpoint from environment or use default
-    const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || '/api/send-email';
+    // For Azure Static Web Apps, API endpoints are automatically available at /api/
+    // Custom endpoint can be configured via window object if needed
+    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) || '/api/send-email';
     
     console.log('🔄 Sending registration email to:', apiEndpoint);
     console.log('📧 Registration data:', registrationData);
