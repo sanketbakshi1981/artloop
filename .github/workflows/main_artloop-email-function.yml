@@ -69,5 +69,5 @@ jobs:
         with:
           app-name: 'artloop-email-function'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: .
           
