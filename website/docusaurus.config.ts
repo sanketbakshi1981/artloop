@@ -21,7 +21,8 @@ const config: Config = {
 
   // Set the production url of your site here
   // TODO: Change to 'https://artloop.us' once DNS is configured
-  url: 'https://gray-water-0a5b86410.1.azurestaticapps.net',
+  // url: 'https://gray-water-0a5b86410.1.azurestaticapps.net',
+  url: 'https://artloop.us',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
