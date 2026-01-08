@@ -14,6 +14,10 @@ export interface Event {
   capacity: string;
   dresscode: string;
   includes: string[];
+  hostEmail: string;
+  isFree?: boolean;
+  inviteOnly?: boolean;
+  inviteCode?: string;
 }
 
 export const eventsData: Record<number, Event> = {
@@ -33,6 +37,7 @@ export const eventsData: Record<number, Event> = {
     capacity: '25 guests',
     dresscode: 'Smart Casual',
     includes: ['Light appetizers', 'Reserved seating', 'Meet and greet with Vikram'],
+    hostEmail: 'sanket.bakshi@gmail.com',
   },
   2: {
     id: 2,
@@ -44,12 +49,16 @@ export const eventsData: Record<number, Event> = {
     performer: 'Aaryav Bakshi',
     performerBio: 'Accomplished Indian classical performer bringing the rich traditions of Hindustani music to contemporary audiences.',
     description: 'An enchanting evening of Indian classical music',
-    fullDescription: 'Immerse yourself in the mesmerizing world of Indian classical music with Aaryav Bakshi. Experience the depth and beauty of Hindustani classical traditions in an intimate rooftop setting. Enjoy traditional Indian refreshments and light bites as you witness this captivating performance.',
+    fullDescription: 'Immerse yourself in the mesmerizing world of Indian classical music with Aaryav Bakshi. Experience the depth and beauty of Hindustani classical traditions in an intimate rooftop setting. Enjoy traditional Indian refreshments and light bites as you witness this captivating performance. This is an invite-only event - you will need an invite code to register.',
     image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80',
-    price: '$65',
+    price: 'Free',
     capacity: '75 guests',
     dresscode: 'Casual',
     includes: ['Welcome drink', 'Indian appetizers', 'Premium seating', 'Photo opportunities'],
+    hostEmail: 'sanket.bakshi@gmail.com',
+    isFree: true,
+    inviteOnly: true,
+    inviteCode: 'MUSIC2026',
   },
   3: {
     id: 3,
@@ -63,10 +72,12 @@ export const eventsData: Record<number, Event> = {
     description: 'A sophisticated evening of classical masterpieces',
     fullDescription: 'Immerse yourself in the timeless beauty of classical music with the Metropolitan Chamber Orchestra. This gala evening features works by Mozart, Beethoven, and Tchaikovsky, performed in the acoustically perfect Symphony Center. A champagne reception follows the performance.',
     image: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1200&q=80',
-    price: '$95',
+    price: 'Free',
     capacity: '200 guests',
     dresscode: 'Black Tie Optional',
     includes: ['Orchestra seating', 'Program booklet', 'Champagne reception', 'Meet and greet with performers'],
+    hostEmail: 'sanket.bakshi@gmail.com',
+    isFree: true,
   },
 };
 
@@ -78,4 +89,20 @@ export const getAllEvents = (): Event[] => {
 // Helper function to get a single event by ID
 export const getEventById = (id: number): Event | undefined => {
   return eventsData[id];
+};
+
+// Helper function to check if an event is free
+export const isEventFree = (event: Event): boolean => {
+  return event.isFree || event.price.toLowerCase() === 'free' || event.price === '$0';
+};
+
+// Helper function to check if an event is invite-only
+export const isInviteOnly = (event: Event): boolean => {
+  return event.inviteOnly === true;
+};
+
+// Helper function to validate invite code
+export const validateInviteCode = (event: Event, code: string): boolean => {
+  if (!event.inviteOnly) return true;
+  return event.inviteCode === code;
 };

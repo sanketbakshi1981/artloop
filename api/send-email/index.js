@@ -15,17 +15,23 @@ module.exports = async function (context, req) {
             eventVenue,
             ticketQuantity,
             totalAmount,
-            paymentStatus
+            paymentStatus,
+            isRegistration,
+            hostEmail
         } = req.body;
 
         // Validate required fields
-        if (!orderID || !customerName || !customerEmail || !eventTitle || !ticketQuantity || !totalAmount) {
+        if (!customerName || !customerEmail || !eventTitle || !ticketQuantity) {
             context.res = {
                 status: 400,
                 body: { error: 'Missing required fields' }
             };
             return;
         }
+
+        // For registrations, orderID is not required
+        const isFreeEvent = isRegistration || totalAmount === 0 || paymentStatus === 'FREE';
+        const finalOrderID = orderID || `REG-${Date.now()}`;
 
         // Configure email transporter
         // For Azure, you can use SendGrid, Azure Communication Services, or other SMTP providers
@@ -60,18 +66,18 @@ module.exports = async function (context, req) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎭 ArtLoop - Payment Confirmation</h1>
+            <h1>🎭 ArtLoop - ${isFreeEvent ? 'Registration Confirmation' : 'Payment Confirmation'}</h1>
         </div>
         <div class="content">
             <div class="success-icon">✓</div>
-            <h2>Thank you for your purchase, ${customerName}!</h2>
-            <p>Your payment has been successfully processed. Here are your order details:</p>
+            <h2>Thank you for your ${isFreeEvent ? 'registration' : 'purchase'}, ${customerName}!</h2>
+            <p>${isFreeEvent ? 'Your registration has been successfully confirmed.' : 'Your payment has been successfully processed.'} Here are your ${isFreeEvent ? 'registration' : 'order'} details:</p>
             
             <div class="ticket-details">
-                <h3>Order Summary</h3>
+                <h3>${isFreeEvent ? 'Registration Summary' : 'Order Summary'}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">Order ID:</span>
-                    <span>${orderID}</span>
+                    <span class="detail-label">${isFreeEvent ? 'Registration ID:' : 'Order ID:'}</span>
+                    <span>${finalOrderID}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Event:</span>
@@ -90,9 +96,10 @@ module.exports = async function (context, req) {
                     <span>${eventVenue}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Number of Tickets:</span>
+                    <span class="detail-label">Number of ${isFreeEvent ? 'Attendees:' : 'Tickets:'}</span>
                     <span>${ticketQuantity}</span>
                 </div>
+                ${!isFreeEvent ? `
                 <div class="detail-row">
                     <span class="detail-label">Total Amount:</span>
                     <span><strong>$${totalAmount.toFixed(2)}</strong></span>
@@ -101,12 +108,13 @@ module.exports = async function (context, req) {
                     <span class="detail-label">Payment Status:</span>
                     <span style="color: #48bb78;"><strong>${paymentStatus}</strong></span>
                 </div>
+                ` : ''}
             </div>
 
             <p><strong>Contact Information:</strong></p>
-            <p>Email: ${customerEmail}<br>Phone: ${customerPhone}</p>
+            <p>Email: ${customerEmail}<br>Phone: ${customerPhone || 'Not provided'}</p>
 
-            <p>Please bring this confirmation email or show the order ID at the venue entrance.</p>
+            <p>Please bring this confirmation email or show the ${isFreeEvent ? 'registration' : 'order'} ID at the venue entrance.</p>
             
             <p>If you have any questions, please contact us at sanket.bakshi@gmail.com</p>
         </div>
@@ -119,7 +127,7 @@ module.exports = async function (context, req) {
 </html>
         `;
 
-        // Email template for administrators
+        // Email template for administrators/host
         const adminEmailHtml = `
 <!DOCTYPE html>
 <html>
@@ -138,18 +146,18 @@ module.exports = async function (context, req) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎭 New Order Notification</h1>
+            <h1>🎭 New ${isFreeEvent ? 'Registration' : 'Order'} Notification</h1>
         </div>
         <div class="content">
             <div class="alert">
-                <strong>New ticket purchase received!</strong>
+                <strong>New ${isFreeEvent ? 'event registration' : 'ticket purchase'} received!</strong>
             </div>
             
             <div class="order-details">
-                <h3>Order Details</h3>
+                <h3>${isFreeEvent ? 'Registration Details' : 'Order Details'}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">Order ID:</span>
-                    <span>${orderID}</span>
+                    <span class="detail-label">${isFreeEvent ? 'Registration ID:' : 'Order ID:'}</span>
+                    <span>${finalOrderID}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Customer Name:</span>
@@ -161,7 +169,7 @@ module.exports = async function (context, req) {
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Customer Phone:</span>
-                    <span>${customerPhone}</span>
+                    <span>${customerPhone || 'Not provided'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Event:</span>
@@ -180,9 +188,10 @@ module.exports = async function (context, req) {
                     <span>${eventVenue}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Tickets Purchased:</span>
+                    <span class="detail-label">${isFreeEvent ? 'Attendees:' : 'Tickets Purchased:'}</span>
                     <span>${ticketQuantity}</span>
                 </div>
+                ${!isFreeEvent ? `
                 <div class="detail-row">
                     <span class="detail-label">Total Amount:</span>
                     <span><strong>$${totalAmount.toFixed(2)}</strong></span>
@@ -191,44 +200,46 @@ module.exports = async function (context, req) {
                     <span class="detail-label">Payment Status:</span>
                     <span style="color: #48bb78;"><strong>${paymentStatus}</strong></span>
                 </div>
+                ` : ''}
             </div>
 
-            <p><strong>Action Required:</strong> Please review this order and ensure the customer receives their tickets.</p>
+            <p><strong>Action Required:</strong> Please review this ${isFreeEvent ? 'registration' : 'order'} and ensure the customer receives ${isFreeEvent ? 'confirmation' : 'their tickets'}.</p>
         </div>
     </div>
 </body>
 </html>
         `;
 
-        // Email recipients
+        // Email recipients - send to host email if it's a free event, otherwise to admins
         const adminEmails = ['sanket.bakshi@gmail.com', 'k.vikramk@gmail.com'];
+        const recipients = isFreeEvent && hostEmail ? [hostEmail, ...adminEmails] : adminEmails;
         
         // Send email to customer
         await transporter.sendMail({
             from: process.env.FROM_EMAIL || 'noreply@artloop.com',
             to: customerEmail,
-            subject: `Order Confirmation - ${eventTitle}`,
+            subject: `${isFreeEvent ? 'Registration' : 'Order'} Confirmation - ${eventTitle}`,
             html: customerEmailHtml
         });
 
         context.log(`Customer email sent to: ${customerEmail}`);
 
-        // Send email to admins
+        // Send email to admins/host
         await transporter.sendMail({
             from: process.env.FROM_EMAIL || 'noreply@artloop.com',
-            to: adminEmails.join(', '),
-            subject: `New Order Alert - ${eventTitle} - ${customerName}`,
+            to: recipients.join(', '),
+            subject: `New ${isFreeEvent ? 'Registration' : 'Order'} Alert - ${eventTitle} - ${customerName}`,
             html: adminEmailHtml
         });
 
-        context.log(`Admin emails sent to: ${adminEmails.join(', ')}`);
+        context.log(`${isFreeEvent ? 'Host and admin' : 'Admin'} emails sent to: ${recipients.join(', ')}`);
 
         context.res = {
             status: 200,
             body: {
                 success: true,
                 message: 'Emails sent successfully',
-                orderID: orderID
+                orderID: finalOrderID
             }
         };
 

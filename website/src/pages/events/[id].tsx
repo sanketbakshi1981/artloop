@@ -3,9 +3,9 @@ import { useLocation } from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
-import { sendOrderConfirmationEmail, OrderData } from '../../services/emailService';
+import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData } from '../../services/emailService';
 import styles from './event.module.css';
-import { getEventById } from '../../data/eventsData';
+import { getEventById, isEventFree, isInviteOnly, validateInviteCode } from '../../data/eventsData';
 
 export default function EventDetail(): JSX.Element {
   const location = useLocation();
@@ -19,6 +19,8 @@ export default function EventDetail(): JSX.Element {
     email: '',
     phone: '',
   });
+  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCodeError, setInviteCodeError] = useState('');
   const [showPayPal, setShowPayPal] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
 
@@ -38,6 +40,8 @@ export default function EventDetail(): JSX.Element {
     setShowTicketModal(true);
     setShowPayPal(false);
     setPaymentStatus('idle');
+    setInviteCode('');
+    setInviteCodeError('');
   };
 
   const handleCustomerInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +56,53 @@ export default function EventDetail(): JSX.Element {
     if (customerInfo.fullName && customerInfo.email && customerInfo.phone) {
       setShowPayPal(true);
       setPaymentStatus('processing');
+    }
+  };
+
+  const handleFreeRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate invite code for invite-only events
+    if (isInviteOnly(event)) {
+      if (!validateInviteCode(event, inviteCode)) {
+        setInviteCodeError('Invalid invite code. Please check and try again.');
+        return;
+      }
+      setInviteCodeError('');
+    }
+    
+    if (customerInfo.fullName && customerInfo.email && customerInfo.phone) {
+      setPaymentStatus('processing');
+      
+      // Prepare registration data for email
+      const registrationData: RegistrationData = {
+        customerName: customerInfo.fullName,
+        customerEmail: customerInfo.email,
+        customerPhone: customerInfo.phone,
+        eventTitle: event.title,
+        eventDate: event.date,
+        eventTime: event.time,
+        eventVenue: event.venue,
+        ticketQuantity,
+        hostEmail: event.hostEmail,
+      };
+      
+      console.log('Registration data:', registrationData);
+      
+      // Send registration emails to customer and host
+      try {
+        const emailSent = await sendRegistrationEmail(registrationData);
+        if (emailSent) {
+          console.log('Registration emails sent successfully');
+          setPaymentStatus('success');
+        } else {
+          console.warn('Failed to send registration emails');
+          setPaymentStatus('error');
+        }
+      } catch (error) {
+        console.error('Error sending registration emails:', error);
+        setPaymentStatus('error');
+      }
     }
   };
 
@@ -95,7 +146,9 @@ export default function EventDetail(): JSX.Element {
     setPaymentStatus('error');
   };
 
-  const priceValue = parseFloat(event.price.replace('$', ''));
+  const isFree = isEventFree(event);
+  const isInviteOnlyEvent = isInviteOnly(event);
+  const priceValue = isFree ? 0 : parseFloat(event.price.replace('$', ''));
   const totalPrice = priceValue * ticketQuantity;
 
   return (
@@ -168,8 +221,19 @@ export default function EventDetail(): JSX.Element {
             <div className={styles.sidebar}>
               <div className={styles.ticketCard}>
                 <div className={styles.priceSection}>
-                  <span className={styles.priceLabel}>Ticket Price</span>
-                  <span className={styles.priceAmount}>{event.price}</span>
+                  <span className={styles.priceLabel}>{isFree ? 'Entry' : 'Ticket Price'}</span>
+                  <span className={styles.priceAmount}>{isInviteOnlyEvent ? 'Invite-Only' : event.price}</span>
+                  {isInviteOnlyEvent && (
+                    <span style={{
+                      display: 'block',
+                      fontSize: '0.875rem',
+                      color: '#ff6b6b',
+                      marginTop: '0.5rem',
+                      fontWeight: '600',
+                    }}>
+                      ⚠️ Invite Only
+                    </span>
+                  )}
                 </div>
                 
                 <div className={styles.ticketDetails}>
@@ -186,7 +250,7 @@ export default function EventDetail(): JSX.Element {
                 <button 
                   className={styles.ticketButton}
                   onClick={handleGetTickets}>
-                  Get Tickets
+                  {isInviteOnlyEvent ? 'RSVP' : (isFree ? 'Register Now' : 'Get Tickets')}
                 </button>
 
                 <div className={styles.shareSection}>
@@ -217,17 +281,17 @@ export default function EventDetail(): JSX.Element {
               {paymentStatus === 'success' ? (
                 <div className={styles.successMessage}>
                   <div className={styles.successIcon}>✓</div>
-                  <h2>Payment Successful!</h2>
-                  <p>Thank you for your purchase, {customerInfo.fullName}!</p>
+                  <h2>{isInviteOnlyEvent ? 'RSVP Confirmed!' : (isFree ? 'Registration Successful!' : 'Payment Successful!')}</h2>
+                  <p>Thank you for your {isInviteOnlyEvent ? 'RSVP' : (isFree ? 'registration' : 'purchase')}, {customerInfo.fullName}!</p>
                   <p>A confirmation email has been sent to <strong>{customerInfo.email}</strong></p>
                   <div className={styles.orderSummary}>
-                    <h3>Order Details</h3>
+                    <h3>{isFree ? 'Registration Details' : 'Order Details'}</h3>
                     <p><strong>Event:</strong> {event.title}</p>
                     <p><strong>Date:</strong> {event.date}</p>
                     <p><strong>Time:</strong> {event.time}</p>
                     <p><strong>Venue:</strong> {event.venue}</p>
-                    <p><strong>Tickets:</strong> {ticketQuantity}</p>
-                    <p><strong>Total Paid:</strong> ${totalPrice.toFixed(2)}</p>
+                    <p><strong>{isFree ? 'Attendees' : 'Tickets'}:</strong> {ticketQuantity}</p>
+                    {!isFree && <p><strong>Total Paid:</strong> ${totalPrice.toFixed(2)}</p>}
                   </div>
                   <button 
                     className={styles.submitButton}
@@ -237,8 +301,8 @@ export default function EventDetail(): JSX.Element {
                 </div>
               ) : paymentStatus === 'error' ? (
                 <div className={styles.errorMessage}>
-                  <h2>Payment Failed</h2>
-                  <p>We couldn't process your payment. Please try again.</p>
+                  <h2>{isInviteOnlyEvent ? 'RSVP Failed' : (isFree ? 'Registration Failed' : 'Payment Failed')}</h2>
+                  <p>We couldn't process your {isInviteOnlyEvent ? 'RSVP' : (isFree ? 'registration' : 'payment')}. Please try again.</p>
                   <button 
                     className={styles.submitButton}
                     onClick={() => {
@@ -250,10 +314,10 @@ export default function EventDetail(): JSX.Element {
                 </div>
               ) : (
                 <>
-                  <h2>Get Tickets</h2>
+                  <h2>{isInviteOnlyEvent ? 'RSVP for Event' : (isFree ? 'Register for Event' : 'Get Tickets')}</h2>
                   <div className={styles.modalBody}>
                     <div className={styles.ticketSelection}>
-                      <label>Number of Tickets:</label>
+                      <label>Number of {isFree ? 'Attendees' : 'Tickets'}:</label>
                       <div className={styles.quantityControl}>
                         <button 
                           onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
@@ -269,13 +333,15 @@ export default function EventDetail(): JSX.Element {
                       </div>
                     </div>
 
-                    <div className={styles.totalPrice}>
-                      <span>Total:</span>
-                      <span className={styles.total}>${totalPrice.toFixed(2)}</span>
-                    </div>
+                    {!isFree && (
+                      <div className={styles.totalPrice}>
+                        <span>Total:</span>
+                        <span className={styles.total}>${totalPrice.toFixed(2)}</span>
+                      </div>
+                    )}
 
                     {!showPayPal ? (
-                      <form className={styles.ticketForm} onSubmit={handleProceedToPayment}>
+                      <form className={styles.ticketForm} onSubmit={isFree ? handleFreeRegistration : handleProceedToPayment}>
                         <input 
                           type="text" 
                           name="fullName"
@@ -301,8 +367,44 @@ export default function EventDetail(): JSX.Element {
                           required 
                         />
                         
-                        <button type="submit" className={styles.submitButton}>
-                          Proceed to Payment
+                        {isInviteOnlyEvent && (
+                          <div>
+                            <input 
+                              type="text" 
+                              placeholder="Invite Code" 
+                              value={inviteCode}
+                              onChange={(e) => {
+                                setInviteCode(e.target.value);
+                                setInviteCodeError('');
+                              }}
+                              required 
+                              style={{
+                                borderColor: inviteCodeError ? '#d32f2f' : undefined,
+                              }}
+                            />
+                            {inviteCodeError && (
+                              <p style={{
+                                color: '#d32f2f',
+                                fontSize: '0.875rem',
+                                marginTop: '0.25rem',
+                                marginBottom: '0.5rem',
+                              }}>
+                                {inviteCodeError}
+                              </p>
+                            )}
+                            <p style={{
+                              fontSize: '0.875rem',
+                              color: '#666',
+                              marginTop: '0.25rem',
+                              fontStyle: 'italic',
+                            }}>
+                              This is an invite-only event. Please enter your invite code.
+                            </p>
+                          </div>
+                        )}
+                        
+                        <button type="submit" className={styles.submitButton} disabled={paymentStatus === 'processing'}>
+                          {isInviteOnlyEvent ? (paymentStatus === 'processing' ? 'Confirming RSVP...' : 'Confirm RSVP') : (isFree ? (paymentStatus === 'processing' ? 'Registering...' : 'Complete Registration') : 'Proceed to Payment')}
                         </button>
                       </form>
                     ) : (
@@ -328,7 +430,7 @@ export default function EventDetail(): JSX.Element {
                       </div>
                     )}
 
-                    {!showPayPal && (
+                    {!showPayPal && !isFree && (
                       <p className={styles.ticketNote}>
                         After clicking "Proceed to Payment", you'll be able to pay securely with PayPal.
                       </p>

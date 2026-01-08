@@ -3,14 +3,15 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
-import { getAllEvents, Event } from '../data/eventsData';
+import { getAllEvents, Event, isInviteOnly } from '../data/eventsData';
 
 function EventCard({ event }: { event: Event }) {
+  const displayPrice = isInviteOnly(event) ? 'Invite-Only' : event.price;
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventImage}>
         <img src={event.image} alt={event.title} />
-        <div className={styles.eventPrice}>{event.price}</div>
+        <div className={styles.eventPrice}>{displayPrice}</div>
       </div>
       <div className={styles.eventContent}>
         <h3 className={styles.eventTitle}>{event.title}</h3>
