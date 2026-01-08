@@ -15,17 +15,20 @@ When a customer completes a payment:
 ## Prerequisites
 
 1. Azure subscription
-2. SendGrid account (or other SMTP provider)
+2. Mailgun account (or other SMTP provider)
 3. Azure Functions Core Tools installed
 
 ## Setup Steps
 
-### 1. Get SendGrid API Key
+### 1. Get Mailgun SMTP Credentials
 
-1. Sign up for a free SendGrid account at https://sendgrid.com
-2. Navigate to Settings > API Keys
-3. Create a new API key with "Mail Send" permissions
-4. Copy the API key (you'll need it in step 3)
+**See [MAILGUN_SETUP.md](./MAILGUN_SETUP.md) for detailed Mailgun configuration instructions.**
+
+Quick steps:
+1. Sign up for a free Mailgun account at https://www.mailgun.com
+2. Add and verify your domain (or use sandbox domain for testing)
+3. Navigate to Sending > Domain Settings > SMTP credentials
+4. Note your SMTP hostname, username, and password
 
 ### 2. Deploy Azure Function
 
@@ -79,7 +82,9 @@ After deploying, configure the following environment variables in your Azure Fun
 4. Add the following settings:
 
 ```
-SENDGRID_API_KEY=your_sendgrid_api_key_here
+MAILGUN_SMTP_HOST=smtp.mailgun.org
+MAILGUN_SMTP_USERNAME=postmaster@your-domain.mailgun.org
+MAILGUN_SMTP_PASSWORD=your-smtp-password
 FROM_EMAIL=noreply@yourdomain.com
 ```
 
@@ -88,7 +93,11 @@ To add via Azure CLI:
 az functionapp config appsettings set \
   --name artloop-email-function \
   --resource-group artloop-rg \
-  --settings "SENDGRID_API_KEY=your_key_here" "FROM_EMAIL=noreply@yourdomain.com"
+  --settings \
+    "MAILGUN_SMTP_HOST=smtp.mailgun.org" \
+    "MAILGUN_SMTP_USERNAME=postmaster@your-domain.mailgun.org" \
+    "MAILGUN_SMTP_PASSWORD=your-smtp-password" \
+    "FROM_EMAIL=noreply@yourdomain.com"
 ```
 
 ### 4. Update Website Configuration
@@ -181,10 +190,10 @@ Azure Functions automatically integrates with Application Insights for detailed 
 
 ### Emails not sending
 
-1. **Check SendGrid API Key**: Verify it's correctly set in Function App settings
-2. **Check SendGrid Account**: Ensure your account is active and has sending quota
+1. **Check Mailgun SMTP Credentials**: Verify they're correctly set in Function App settings
+2. **Check Mailgun Domain**: Ensure your domain is verified with all DNS records
 3. **View Function Logs**: Check for error messages in the log stream
-4. **Verify FROM_EMAIL**: Make sure it's a verified sender in SendGrid
+4. **Verify FROM_EMAIL**: Make sure it uses your verified Mailgun domain
 
 ### CORS Errors
 
@@ -198,31 +207,6 @@ Azure Functions automatically integrates with Application Insights for detailed 
 3. Ensure the function has the correct authorization level
 
 ## Alternative Email Providers
-
-### Using Azure Communication Services
-
-Replace the nodemailer configuration in `/api/send-email/index.js`:
-
-```javascript
-const { EmailClient } = require("@azure/communication-email");
-
-const connectionString = process.env.AZURE_COMMUNICATION_CONNECTION_STRING;
-const client = new EmailClient(connectionString);
-
-// Send email
-const message = {
-  senderAddress: "DoNotReply@yourdomain.com",
-  content: {
-    subject: "Order Confirmation",
-    html: customerEmailHtml,
-  },
-  recipients: {
-    to: [{ address: customerEmail }],
-  },
-};
-
-await client.beginSend(message);
-```
 
 ### Using Microsoft 365 SMTP
 
@@ -250,7 +234,8 @@ const transporter = nodemailer.createTransport({
 
 ## Cost Considerations
 
-- SendGrid Free Tier: 100 emails/day
+- Mailgun Free Tier: 5,000 emails/month for first 3 months
+- Mailgun Foundation: $35/month for 50,000 emails
 - Azure Functions Consumption Plan: First 1 million executions free
 - Azure Static Web Apps: Free tier available
 
@@ -262,7 +247,7 @@ If you encounter issues:
 1. Check Azure Function logs
 2. Verify all environment variables are set
 3. Test the function directly using Azure Portal
-4. Review SendGrid activity logs
+4. Review Mailgun logs in the Mailgun dashboard
 
 ---
 

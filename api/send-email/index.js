@@ -34,15 +34,15 @@ module.exports = async function (context, req) {
         const finalOrderID = orderID || `REG-${Date.now()}`;
 
         // Configure email transporter
-        // For Azure, you can use SendGrid, Azure Communication Services, or other SMTP providers
-        // This example uses SendGrid
+        // For Azure, you can use Mailgun, Azure Communication Services, or other SMTP providers
+        // This example uses Mailgun
         const transporter = nodemailer.createTransport({
-            host: 'smtp.sendgrid.net',
+            host: process.env.MAILGUN_SMTP_HOST || 'smtp.mailgun.org',
             port: 587,
             secure: false,
             auth: {
-                user: 'apikey',
-                pass: process.env.SENDGRID_API_KEY // Store this in Azure Function App Settings
+                user: process.env.MAILGUN_SMTP_USERNAME,
+                pass: process.env.MAILGUN_SMTP_PASSWORD // Store this in Azure Function App Settings
             }
         });
 

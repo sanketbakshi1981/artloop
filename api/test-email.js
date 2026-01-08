@@ -1,22 +1,24 @@
-// Test script to verify SendGrid configuration
+// Test script to verify Mailgun configuration
 const nodemailer = require('nodemailer');
 
 // Replace these with your actual values
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'your-api-key-here';
-const FROM_EMAIL = 'sanket.bakshi@gmail.com'; // Must be verified in SendGrid
+const MAILGUN_SMTP_HOST = process.env.MAILGUN_SMTP_HOST || 'smtp.mailgun.org';
+const MAILGUN_SMTP_USERNAME = process.env.MAILGUN_SMTP_USERNAME || 'postmaster@your-domain.mailgun.org';
+const MAILGUN_SMTP_PASSWORD = process.env.MAILGUN_SMTP_PASSWORD || 'your-smtp-password';
+const FROM_EMAIL = 'noreply@your-domain.com'; // Must be from your verified Mailgun domain
 const TEST_EMAIL = 'sanket.bakshi@gmail.com'; // Where you want to receive the test email
 
 async function testEmail() {
-    console.log('Testing SendGrid email configuration...\n');
+    console.log('Testing Mailgun email configuration...\n');
 
     try {
         const transporter = nodemailer.createTransport({
-            host: 'smtp.sendgrid.net',
+            host: MAILGUN_SMTP_HOST,
             port: 587,
             secure: false,
             auth: {
-                user: 'apikey',
-                pass: SENDGRID_API_KEY
+                user: MAILGUN_SMTP_USERNAME,
+                pass: MAILGUN_SMTP_PASSWORD
             }
         });
 
@@ -39,12 +41,13 @@ async function testEmail() {
         </div>
         <div class="content">
             <div class="success">✓ Success!</div>
-            <h2>Your SendGrid configuration is working!</h2>
-            <p>This is a test email to verify that your SendGrid API key and email settings are correctly configured.</p>
+            <h2>Your Mailgun configuration is working!</h2>
+            <p>This is a test email to verify that your Mailgun SMTP credentials and email settings are correctly configured.</p>
             <p><strong>Test Details:</strong></p>
             <ul>
+                <li>SMTP Host: ${MAILGUN_SMTP_HOST}</li>
+                <li>SMTP Username: ${MAILGUN_SMTP_USERNAME}</li>
                 <li>From Email: ${FROM_EMAIL}</li>
-                <li>API Key: ${SENDGRID_API_KEY.substring(0, 10)}...</li>
                 <li>Test Date: ${new Date().toLocaleString()}</li>
             </ul>
             <p>You're all set to send order confirmation emails!</p>
@@ -58,23 +61,24 @@ async function testEmail() {
         const info = await transporter.sendMail({
             from: FROM_EMAIL,
             to: TEST_EMAIL,
-            subject: 'ArtLoop - SendGrid Test Email',
+            subject: 'ArtLoop - Mailgun Test Email',
             html: testEmailHtml
         });
 
         console.log('✓ Email sent successfully!');
         console.log('Message ID:', info.messageId);
         console.log('\nCheck your inbox at:', TEST_EMAIL);
-        console.log('\nYour SendGrid configuration is working correctly! 🎉');
+        console.log('\nYour Mailgun configuration is working correctly! 🎉');
 
     } catch (error) {
         console.error('✗ Error sending email:');
         console.error(error.message);
         console.error('\nTroubleshooting:');
-        console.error('1. Verify your SendGrid API key is correct');
-        console.error('2. Ensure FROM_EMAIL is verified in SendGrid');
-        console.error('3. Check that your SendGrid account is active');
-        console.error('4. Verify API key has Mail Send permissions');
+        console.error('1. Verify your Mailgun SMTP credentials are correct');
+        console.error('2. Ensure FROM_EMAIL uses your verified Mailgun domain');
+        console.error('3. Check that your Mailgun account is active');
+        console.error('4. Verify your domain is properly configured in Mailgun');
+        console.error('5. Check that SMTP is enabled for your Mailgun domain');
     }
 }
 
