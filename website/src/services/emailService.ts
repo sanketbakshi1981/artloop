@@ -1,4 +1,6 @@
 // Email service to send order confirmation emails via Azure Functions
+import { API_CONFIG } from '../config/api.config';
+
 export interface OrderData {
   orderID: string;
   customerName: string;
@@ -33,9 +35,9 @@ export interface EmailResult {
 
 export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {
   try {
-    // For Azure Static Web Apps, API endpoints are automatically available at /api/
-    // Custom endpoint can be configured via window object if needed
-    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) || '/api/send-email';
+    // Use standalone Azure Function App endpoint
+    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) 
+      || API_CONFIG.EMAIL_API_URL;
     
     console.log('🔄 Sending order confirmation email to:', apiEndpoint);
     console.log('📧 Order data:', orderData);
@@ -83,9 +85,9 @@ export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<
 
 export async function sendRegistrationEmail(registrationData: RegistrationData): Promise<EmailResult> {
   try {
-    // For Azure Static Web Apps, API endpoints are automatically available at /api/
-    // Custom endpoint can be configured via window object if needed
-    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) || '/api/send-email';
+    // Use standalone Azure Function App endpoint
+    const apiEndpoint = (typeof window !== 'undefined' && (window as any).REACT_APP_API_ENDPOINT) 
+      || API_CONFIG.EMAIL_API_URL;
     
     console.log('🔄 Sending registration email to:', apiEndpoint);
     console.log('📧 Registration data:', registrationData);
