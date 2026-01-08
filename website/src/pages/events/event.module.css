@@ -1,5 +1,6 @@
 .eventDetailPage {
   min-height: 100vh;
+  background-color: var(--ifm-background-color);
 }
 
 .heroImage {
@@ -65,19 +66,19 @@
 .section h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #2d3748;
+  color: var(--ifm-heading-color);
 }
 
 .section h3 {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
 }
 
 .description {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
 }
 
 .includesList {
@@ -87,15 +88,16 @@
 
 .includesList li {
   padding: 0.75rem 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: var(--ifm-font-color-base);
 }
 
 .includesList li:before {
   content: "✓";
-  color: #667eea;
+  color: var(--ifm-color-primary);
   font-weight: bold;
   font-size: 1.2rem;
 }
@@ -107,11 +109,11 @@
 }
 
 .ticketCard {
-  background: white;
+  background: var(--ifm-card-background-color);
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--ifm-color-emphasis-300);
 }
 
 .priceSection {
@@ -119,20 +121,20 @@
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 0;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid var(--ifm-color-emphasis-300);
   margin-bottom: 1.5rem;
 }
 
 .priceLabel {
   font-size: 0.9rem;
-  color: #718096;
+  color: var(--ifm-color-emphasis-700);
   margin-bottom: 0.5rem;
 }
 
 .priceAmount {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #667eea;
+  color: var(--ifm-color-primary);
 }
 
 .ticketDetails {
@@ -143,7 +145,8 @@
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
 }
 
 .ticketButton {
@@ -166,12 +169,12 @@
 .shareSection {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 2px solid #e2e8f0;
+  border-top: 2px solid var(--ifm-color-emphasis-300);
 }
 
 .shareSection p {
   font-size: 0.9rem;
-  color: #718096;
+  color: var(--ifm-color-emphasis-700);
   margin-bottom: 0.5rem;
 }
 
@@ -184,19 +187,19 @@
   flex: 1;
   padding: 0.5rem;
   text-align: center;
-  background-color: #f7fafc;
-  border: 1px solid #e2e8f0;
+  background-color: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 6px;
   text-decoration: none;
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
 .shareButtons a:hover {
-  background-color: #667eea;
+  background-color: var(--ifm-color-primary);
   color: white;
-  border-color: #667eea;
+  border-color: var(--ifm-color-primary);
 }
 
 /* Modal Styles */
@@ -215,7 +218,7 @@
 }
 
 .modalContent {
-  background: white;
+  background: var(--ifm-card-background-color);
   border-radius: 12px;
   padding: 2rem;
   max-width: 500px;
@@ -233,7 +236,7 @@
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #718096;
+  color: var(--ifm-color-emphasis-700);
   width: 40px;
   height: 40px;
   display: flex;
@@ -244,13 +247,13 @@
 }
 
 .closeButton:hover {
-  background-color: #f7fafc;
-  color: #2d3748;
+  background-color: var(--ifm-color-emphasis-200);
+  color: var(--ifm-font-color-base);
 }
 
 .modalContent h2 {
   margin-bottom: 1.5rem;
-  color: #2d3748;
+  color: var(--ifm-heading-color);
 }
 
 .modalBody {
@@ -265,7 +268,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--ifm-font-color-base);
 }
 
 .quantityControl {
@@ -278,9 +281,9 @@
 .quantityControl button {
   width: 40px;
   height: 40px;
-  border: 2px solid #667eea;
-  background: white;
-  color: #667eea;
+  border: 2px solid var(--ifm-color-primary);
+  background: var(--ifm-card-background-color);
+  color: var(--ifm-color-primary);
   border-radius: 8px;
   font-size: 1.5rem;
   cursor: pointer;
@@ -288,7 +291,7 @@
 }
 
 .quantityControl button:hover:not(:disabled) {
-  background: #667eea;
+  background: var(--ifm-color-primary);
   color: white;
 }
 
@@ -302,6 +305,7 @@
   font-weight: 600;
   min-width: 40px;
   text-align: center;
+  color: var(--ifm-font-color-base);
 }
 
 .totalPrice {
@@ -309,16 +313,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #f7fafc;
+  background-color: var(--ifm-color-emphasis-100);
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
+  color: var(--ifm-font-color-base);
 }
 
 .total {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #667eea;
+  color: var(--ifm-color-primary);
 }
 
 .ticketForm {
@@ -329,15 +334,17 @@
 
 .ticketForm input {
   padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--ifm-color-emphasis-300);
   border-radius: 8px;
   font-size: 1rem;
   transition: border-color 0.2s ease;
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
 }
 
 .ticketForm input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--ifm-color-primary);
 }
 
 .submitButton {
@@ -359,7 +366,7 @@
 
 .ticketNote {
   font-size: 0.85rem;
-  color: #718096;
+  color: var(--ifm-color-emphasis-700);
   text-align: center;
   margin-top: 1rem;
   font-style: italic;
@@ -371,7 +378,7 @@
 
 .paymentInfo {
   text-align: center;
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
   margin-bottom: 1rem;
   font-weight: 500;
 }
@@ -379,9 +386,9 @@
 .backButton {
   width: 100%;
   padding: 0.75rem;
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  background: var(--ifm-card-background-color);
+  color: var(--ifm-color-primary);
+  border: 2px solid var(--ifm-color-primary);
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
@@ -391,7 +398,7 @@
 }
 
 .backButton:hover {
-  background: #f7fafc;
+  background: var(--ifm-color-emphasis-100);
 }
 
 .successMessage {
@@ -413,18 +420,18 @@
 }
 
 .successMessage h2 {
-  color: #2d3748;
+  color: var(--ifm-heading-color);
   margin-bottom: 1rem;
 }
 
 .successMessage p {
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
   margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
 .orderSummary {
-  background: #f7fafc;
+  background: var(--ifm-color-emphasis-100);
   border-radius: 8px;
   padding: 1.5rem;
   margin: 1.5rem 0;
@@ -434,12 +441,12 @@
 .orderSummary h3 {
   font-size: 1.2rem;
   margin-bottom: 1rem;
-  color: #2d3748;
+  color: var(--ifm-heading-color);
 }
 
 .orderSummary p {
   margin-bottom: 0.5rem;
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
 }
 
 .errorMessage {
@@ -453,7 +460,7 @@
 }
 
 .errorMessage p {
-  color: #4a5568;
+  color: var(--ifm-font-color-base);
   margin-bottom: 1.5rem;
 }
 
@@ -465,14 +472,14 @@
 .notFound h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #2d3748;
+  color: var(--ifm-heading-color);
 }
 
 .notFound a {
   display: inline-block;
   margin-top: 2rem;
   padding: 0.75rem 2rem;
-  background-color: #667eea;
+  background-color: var(--ifm-color-primary);
   color: white;
   text-decoration: none;
   border-radius: 8px;
