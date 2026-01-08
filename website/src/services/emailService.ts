@@ -58,6 +58,9 @@ export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<
         errorData = { error: 'Failed to parse error response', status: response.status };
       }
       console.error('❌ Email service error:', errorData);
+      console.error('💬 Error message:', errorData.error);
+      console.error('🔍 Error details:', errorData.details);
+      console.error('📋 Full error object:', JSON.stringify(errorData, null, 2));
       return {
         success: false,
         error: errorData.error || `HTTP ${response.status}: ${response.statusText}`,
@@ -110,6 +113,9 @@ export async function sendRegistrationEmail(registrationData: RegistrationData):
         errorData = { error: 'Failed to parse error response', status: response.status };
       }
       console.error('❌ Registration email service error:', errorData);
+      console.error('💬 Error message:', errorData.error);
+      console.error('🔍 Error details:', errorData.details);
+      console.error('📋 Full error object:', JSON.stringify(errorData, null, 2));
       return {
         success: false,
         error: errorData.error || `HTTP ${response.status}: ${response.statusText}`,
