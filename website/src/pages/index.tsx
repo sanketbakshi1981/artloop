@@ -3,45 +3,9 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
+import { getAllEvents, Event } from '../data/eventsData';
 
-// Sample upcoming events data
-const upcomingEvents = [
-  {
-    id: 1,
-    title: 'Acoustic Bollywood Night',
-    date: 'January 18, 2026',
-    time: '7:00 PM - 10:00 PM',
-    venue: '18 Pemberton Dr, Matawan, NJ',
-    performer: 'Vikram Kumar',
-    description: 'A fun evening of your favorite bollywood tunes performed live on acoustic guitar',
-    image: '/eventimg/Jan2025/Jan-18-Vikram1.jpeg',
-    price: '$35',
-  },
-  {
-    id: 2,
-    title: 'Indian Classical Music Evening',
-    date: 'January 28, 2026',
-    time: '6:00 PM - 9:00 PM',
-    venue: 'Rooftop Terrace',
-    performer: 'Aaryav Bakshi',
-    description: 'An enchanting evening of Indian classical music',
-    image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
-    price: '$65',
-  },
-  {
-    id: 3,
-    title: 'Classical Gala Night',
-    date: 'February 10, 2026',
-    time: '8:00 PM - 11:00 PM',
-    venue: 'Symphony Center',
-    performer: 'Metropolitan Chamber Orchestra',
-    description: 'A sophisticated evening of classical masterpieces',
-    image: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&q=80',
-    price: '$95',
-  },
-];
-
-function EventCard({ event }) {
+function EventCard({ event }: { event: Event }) {
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventImage}>
@@ -103,6 +67,8 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
+  const upcomingEvents = getAllEvents();
+  
   return (
     <Layout
       title={`Welcome to ${siteConfig.title}`}
