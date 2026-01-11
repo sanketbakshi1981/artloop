@@ -32,6 +32,7 @@ export interface EmailResult {
   error?: string;
   details?: any;
   registrationCode?: string;
+  qrCodeDataURL?: string;
 }
 
 export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {

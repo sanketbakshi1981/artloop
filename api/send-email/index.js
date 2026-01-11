@@ -315,7 +315,8 @@ module.exports = async function (context, req) {
                 success: true,
                 message: 'Emails sent successfully',
                 orderID: finalOrderID,
-                registrationCode: registrationCode
+                registrationCode: registrationCode,
+                qrCodeDataURL: qrCodeDataURL
             }
         };
 

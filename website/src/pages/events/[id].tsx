@@ -6,7 +6,6 @@ import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
 import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData, EmailResult } from '../../services/emailService';
 import styles from './event.module.css';
 import { getEventById, isEventFree, isInviteOnly, validateInviteCode } from '../../data/eventsData';
-import QRCode from 'qrcode';
 
 export default function EventDetail(): JSX.Element {
   const location = useLocation();
@@ -98,29 +97,12 @@ export default function EventDetail(): JSX.Element {
         if (result.success) {
           console.log('Registration emails sent successfully');
           
-          // Get registration code from API response
-          const regCode = (result as any).registrationCode || '';
-          setRegistrationCode(regCode);
+          // Get registration code and QR code from API response
+          const regCode = result.registrationCode || '';
+          const qrDataUrl = result.qrCodeDataURL || '';
           
-          // Generate QR code on frontend
-          if (regCode) {
-            try {
-              const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://artloop.us';
-              const verificationUrl = `${baseUrl}/verify?code=${regCode}&email=${encodeURIComponent(customerInfo.email)}&quantity=${ticketQuantity}&name=${encodeURIComponent(customerInfo.fullName)}&event=${encodeURIComponent(event.title)}&date=${encodeURIComponent(event.date)}&time=${encodeURIComponent(event.time)}&venue=${encodeURIComponent(event.venue)}`;
-              
-              const qrDataUrl = await QRCode.toDataURL(verificationUrl, {
-                width: 300,
-                margin: 2,
-                color: {
-                  dark: '#000000',
-                  light: '#FFFFFF'
-                }
-              });
-              setQrCodeDataURL(qrDataUrl);
-            } catch (qrError) {
-              console.error('Error generating QR code:', qrError);
-            }
-          }
+          setRegistrationCode(regCode);
+          setQrCodeDataURL(qrDataUrl);
           
           setPaymentStatus('success');
         } else {
