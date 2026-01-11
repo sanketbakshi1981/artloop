@@ -430,6 +430,62 @@
   line-height: 1.6;
 }
 
+.qrCodeSection {
+  background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+  border: 2px solid #cbd5e0;
+}
+
+.qrCodeSection h3 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.registrationCode {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2d3748;
+  letter-spacing: 8px;
+  margin: 15px 0;
+  font-family: 'Courier New', monospace;
+  background: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qrCodeImage {
+  max-width: 300px;
+  width: 100%;
+  margin: 15px auto;
+  display: block;
+  border-radius: 8px;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.qrInstructions {
+  background: #c6f6d5;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0 0 0;
+  border-left: 4px solid #48bb78;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #22543d;
+  line-height: 1.6;
+}
+
+.qrInstructions strong {
+  color: #22543d;
+}
+
 .orderSummary {
   background: var(--ifm-color-emphasis-100);
   border-radius: 8px;

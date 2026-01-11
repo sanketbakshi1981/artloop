@@ -31,6 +31,7 @@ export interface EmailResult {
   success: boolean;
   error?: string;
   details?: any;
+  registrationCode?: string;
 }
 
 export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<EmailResult> {

@@ -6,6 +6,7 @@ import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
 import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData, EmailResult } from '../../services/emailService';
 import styles from './event.module.css';
 import { getEventById, isEventFree, isInviteOnly, validateInviteCode } from '../../data/eventsData';
+import QRCode from 'qrcode';
 
 export default function EventDetail(): JSX.Element {
   const location = useLocation();
@@ -23,6 +24,8 @@ export default function EventDetail(): JSX.Element {
   const [inviteCodeError, setInviteCodeError] = useState('');
   const [showPayPal, setShowPayPal] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [registrationCode, setRegistrationCode] = useState<string>('');
+  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
 
   if (!event) {
     return (
@@ -94,6 +97,31 @@ export default function EventDetail(): JSX.Element {
         const result = await sendRegistrationEmail(registrationData);
         if (result.success) {
           console.log('Registration emails sent successfully');
+          
+          // Get registration code from API response
+          const regCode = (result as any).registrationCode || '';
+          setRegistrationCode(regCode);
+          
+          // Generate QR code on frontend
+          if (regCode) {
+            try {
+              const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://artloop.us';
+              const verificationUrl = `${baseUrl}/verify?code=${regCode}&email=${encodeURIComponent(customerInfo.email)}&quantity=${ticketQuantity}&name=${encodeURIComponent(customerInfo.fullName)}&event=${encodeURIComponent(event.title)}&date=${encodeURIComponent(event.date)}&time=${encodeURIComponent(event.time)}&venue=${encodeURIComponent(event.venue)}`;
+              
+              const qrDataUrl = await QRCode.toDataURL(verificationUrl, {
+                width: 300,
+                margin: 2,
+                color: {
+                  dark: '#000000',
+                  light: '#FFFFFF'
+                }
+              });
+              setQrCodeDataURL(qrDataUrl);
+            } catch (qrError) {
+              console.error('Error generating QR code:', qrError);
+            }
+          }
+          
           setPaymentStatus('success');
         } else {
           console.error('❌ Registration failed:', result.error);
@@ -289,8 +317,25 @@ export default function EventDetail(): JSX.Element {
                   <h2>{isInviteOnlyEvent ? 'RSVP Confirmed!' : (isFree ? 'Registration Successful!' : 'Payment Successful!')}</h2>
                   <p>Thank you for your {isInviteOnlyEvent ? 'RSVP' : (isFree ? 'registration' : 'purchase')}, {customerInfo.fullName}!</p>
                   <p>A confirmation email has been sent to <strong>{customerInfo.email}</strong></p>
+                  
+                  {isFree && registrationCode && qrCodeDataURL && (
+                    <div className={styles.qrCodeSection}>
+                      <h3>Your Registration QR Code</h3>
+                      <div className={styles.registrationCode}>{registrationCode}</div>
+                      <p style={{ margin: '10px 0', color: '#4a5568', fontSize: '0.9rem' }}>Registration Code</p>
+                      <img src={qrCodeDataURL} alt="Registration QR Code" className={styles.qrCodeImage} />
+                      <div className={styles.qrInstructions}>
+                        <strong>📱 Important:</strong> Present this QR code at the venue entrance for quick check-in.<br />
+                        Alternatively, you can provide the registration code: <strong>{registrationCode}</strong>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className={styles.orderSummary}>
                     <h3>{isFree ? 'Registration Details' : 'Order Details'}</h3>
+                    {isFree && registrationCode && (
+                      <p><strong>Registration Code:</strong> <span style={{ fontFamily: 'monospace', fontSize: '1.1rem', color: '#2d3748' }}>{registrationCode}</span></p>
+                    )}
                     <p><strong>Event:</strong> {event.title}</p>
                     <p><strong>Date:</strong> {event.date}</p>
                     <p><strong>Time:</strong> {event.time}</p>
