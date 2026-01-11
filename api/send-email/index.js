@@ -49,14 +49,25 @@ module.exports = async function (context, req) {
         
         // Generate QR code for free events
         let qrCodeDataURL = null;
+        let qrCodeBuffer = null;
         if (isFreeEvent && registrationCode) {
             try {
                 // Create verification URL with registration details
                 const baseUrl = process.env.WEBSITE_URL || 'https://artloop.azurewebsites.net';
                 const verificationUrl = `${baseUrl}/verify?code=${registrationCode}&email=${encodeURIComponent(customerEmail)}&quantity=${ticketQuantity}&name=${encodeURIComponent(customerName)}&event=${encodeURIComponent(eventTitle)}&date=${encodeURIComponent(eventDate)}&time=${encodeURIComponent(eventTime)}&venue=${encodeURIComponent(eventVenue)}`;
                 
-                // Generate QR code as Data URL
+                // Generate QR code as Data URL for frontend response
                 qrCodeDataURL = await QRCode.toDataURL(verificationUrl, {
+                    width: 300,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                });
+                
+                // Generate QR code as Buffer for email attachment
+                qrCodeBuffer = await QRCode.toBuffer(verificationUrl, {
                     width: 300,
                     margin: 2,
                     color: {
@@ -116,12 +127,12 @@ module.exports = async function (context, req) {
             <h2>Thank you for your ${isFreeEvent ? 'registration' : 'purchase'}, ${customerName}!</h2>
             <p>${isFreeEvent ? 'Your registration has been successfully confirmed.' : 'Your payment has been successfully processed.'} Here are your ${isFreeEvent ? 'registration' : 'order'} details:</p>
             
-            ${isFreeEvent && registrationCode && qrCodeDataURL ? `
+            ${isFreeEvent && registrationCode && qrCodeBuffer ? `
             <div class="qr-code-section">
                 <h3>Your Registration QR Code</h3>
                 <div class="registration-code">${registrationCode}</div>
                 <p style="margin: 10px 0; color: #4a5568;">Registration Code</p>
-                <img src="${qrCodeDataURL}" alt="Registration QR Code" class="qr-code-img" />
+                <img src="cid:qrcode@artloop" alt="Registration QR Code" class="qr-code-img" />
                 <div class="instructions">
                     <strong>📱 Important:</strong> Present this QR code at the venue entrance for quick check-in.<br>
                     Alternatively, you can provide the registration code: <strong>${registrationCode}</strong>
@@ -289,13 +300,27 @@ module.exports = async function (context, req) {
         const adminEmails = ['sanket.bakshi@gmail.com', 'k.vikramk@gmail.com'];
         const recipients = isFreeEvent && hostEmail ? [hostEmail, ...adminEmails] : adminEmails;
         
-        // Send email to customer
-        await transporter.sendMail({
+        // Prepare email options for customer
+        const customerEmailOptions = {
             from: process.env.FROM_EMAIL || 'noreply@artloop.com',
             to: customerEmail,
             subject: `${isFreeEvent ? 'Registration' : 'Order'} Confirmation - ${eventTitle}`,
             html: customerEmailHtml
-        });
+        };
+        
+        // Add QR code as attachment for free events
+        if (isFreeEvent && qrCodeBuffer) {
+            customerEmailOptions.attachments = [
+                {
+                    filename: 'qr-code.png',
+                    content: qrCodeBuffer,
+                    cid: 'qrcode@artloop' // same cid value as in the html img src
+                }
+            ];
+        }
+        
+        // Send email to customer
+        await transporter.sendMail(customerEmailOptions);
 
         context.log(`Customer email sent to: ${customerEmail}`);
 
