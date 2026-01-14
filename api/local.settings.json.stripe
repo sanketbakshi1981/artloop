@@ -1,0 +1,14 @@
+# Stripe Configuration Template
+# Copy this to your Azure Function App Configuration
+
+# Required: Your Stripe Secret Key
+# Get this from: https://dashboard.stripe.com/apikeys
+# NEVER commit this to source control!
+STRIPE_SECRET_KEY=sk_test_YOUR_SECRET_KEY_HERE
+
+# For production, use your live secret key:
+# STRIPE_SECRET_KEY=sk_live_YOUR_LIVE_SECRET_KEY_HERE
+
+# Optional: Webhook Secret (if using webhooks)
+# Get this from: https://dashboard.stripe.com/webhooks
+# STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET_HERE

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import PayPalCheckout from '../../components/PayPalCheckout/PayPalCheckout';
+import StripeCheckout from '../../components/StripeCheckout/StripeCheckout';
 import { sendOrderConfirmationEmail, sendRegistrationEmail, OrderData, RegistrationData, EmailResult } from '../../services/emailService';
 import styles from './event.module.css';
 import { getEventById, isEventFree, isInviteOnly, validateInviteCode } from '../../data/eventsData';
@@ -21,7 +21,7 @@ export default function EventDetail(): JSX.Element {
   });
   const [inviteCode, setInviteCode] = useState('');
   const [inviteCodeError, setInviteCodeError] = useState('');
-  const [showPayPal, setShowPayPal] = useState(false);
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [registrationCode, setRegistrationCode] = useState<string>('');
   const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
@@ -40,7 +40,7 @@ export default function EventDetail(): JSX.Element {
 
   const handleGetTickets = () => {
     setShowTicketModal(true);
-    setShowPayPal(false);
+    setShowStripeCheckout(false);
     setPaymentStatus('idle');
     setInviteCode('');
     setInviteCodeError('');
@@ -56,7 +56,7 @@ export default function EventDetail(): JSX.Element {
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (customerInfo.fullName && customerInfo.email && customerInfo.phone) {
-      setShowPayPal(true);
+      setShowStripeCheckout(true);
       setPaymentStatus('processing');
     }
   };
@@ -339,7 +339,7 @@ export default function EventDetail(): JSX.Element {
                     className={styles.submitButton}
                     onClick={() => {
                       setPaymentStatus('idle');
-                      setShowPayPal(false);
+                      setShowStripeCheckout(false);
                     }}>
                     Try Again
                   </button>
@@ -353,13 +353,13 @@ export default function EventDetail(): JSX.Element {
                       <div className={styles.quantityControl}>
                         <button 
                           onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
-                          disabled={ticketQuantity <= 1 || showPayPal}>
+                          disabled={ticketQuantity <= 1 || showStripeCheckout}>
                           -
                         </button>
                         <span>{ticketQuantity}</span>
                         <button 
                           onClick={() => setTicketQuantity(Math.min(10, ticketQuantity + 1))}
-                          disabled={ticketQuantity >= 10 || showPayPal}>
+                          disabled={ticketQuantity >= 10 || showStripeCheckout}>
                           +
                         </button>
                       </div>
@@ -372,7 +372,7 @@ export default function EventDetail(): JSX.Element {
                       </div>
                     )}
 
-                    {!showPayPal ? (
+                    {!showStripeCheckout ? (
                       <form className={styles.ticketForm} onSubmit={isFree ? handleFreeRegistration : handleProceedToPayment}>
                         <input 
                           type="text" 
@@ -440,11 +440,11 @@ export default function EventDetail(): JSX.Element {
                         </button>
                       </form>
                     ) : (
-                      <div className={styles.paypalContainer}>
+                      <div className={styles.stripeContainer}>
                         <p className={styles.paymentInfo}>
-                          Complete your payment securely with PayPal
+                          Complete your payment securely with Stripe
                         </p>
-                        <PayPalCheckout
+                        <StripeCheckout
                           amount={totalPrice}
                           eventTitle={event.title}
                           ticketQuantity={ticketQuantity}
@@ -454,7 +454,7 @@ export default function EventDetail(): JSX.Element {
                         <button 
                           className={styles.backButton}
                           onClick={() => {
-                            setShowPayPal(false);
+                            setShowStripeCheckout(false);
                             setPaymentStatus('idle');
                           }}>
                           ← Back to Details
@@ -462,9 +462,9 @@ export default function EventDetail(): JSX.Element {
                       </div>
                     )}
 
-                    {!showPayPal && !isFree && (
+                    {!showStripeCheckout && !isFree && (
                       <p className={styles.ticketNote}>
-                        After clicking "Proceed to Payment", you'll be able to pay securely with PayPal.
+                        After clicking "Proceed to Payment", you'll be able to pay securely with Stripe.
                       </p>
                     )}
                   </div>

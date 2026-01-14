@@ -16,7 +16,7 @@ const config: Config = {
 
   // Custom fields for client-side access
   customFields: {
-    paypalClientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
+    stripePublishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY,
   },
 
   // Set the production url of your site here

@@ -129,7 +129,11 @@ export async function sendRegistrationEmail(registrationData: RegistrationData):
 
     const result = await response.json();
     console.log('✅ Registration email sent successfully:', result);
-    return { success: true };
+    return { 
+      success: true, 
+      registrationCode: result.registrationCode,
+      qrCodeDataURL: result.qrCodeDataURL 
+    };
   } catch (error) {
     console.error('❌ Failed to send registration email:', error);
     return {

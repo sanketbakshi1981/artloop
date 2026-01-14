@@ -6,6 +6,12 @@
     "MAILGUN_SMTP_HOST": "smtp.mailgun.org",
     "MAILGUN_SMTP_USERNAME": "postmaster@your-domain.mailgun.org",
     "MAILGUN_SMTP_PASSWORD": "your-smtp-password-here",
-    "FROM_EMAIL": "noreply@your-domain.com"
+    "FROM_EMAIL": "noreply@your-domain.com",
+    "COSMOS_DB_ENDPOINT": "https://artloop-cosmosdb.documents.azure.com:443/",
+    "COSMOS_DB_KEY": "your-cosmosdb-primary-key-here",
+    "COSMOS_DB_DATABASE": "artloop-db",
+    "COSMOS_DB_CONTAINER": "registrations",
+    "COSMOS_DB_EVENTS_CONTAINER": "events",
+    "WEBSITE_URL": "https://artloop.azurewebsites.net"
   }
 }

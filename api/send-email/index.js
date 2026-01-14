@@ -1,13 +1,33 @@
 const nodemailer = require('nodemailer');
 const QRCode = require('qrcode');
+const { storeRegistration } = require('../shared/cosmosdb');
 
-// Generate a random 5-character alphanumeric registration code
+/**
+ * Generate a unique registration code for free event registrations.
+ * This is the SINGLE SOURCE OF TRUTH for registration code generation.
+ * The code is used as both the registration ID and verification code.
+ * 
+ * Format: 8-character alphanumeric code (e.g., "A3X9T7K2")
+ * - First 6 characters: Random alphanumeric
+ * - Last 2 characters: Base-36 encoded timestamp component for uniqueness
+ * 
+ * @returns {string} Unique 8-character registration code
+ */
 function generateRegistrationCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
-    for (let i = 0; i < 5; i++) {
+    
+    // Generate 6 random characters
+    for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    
+    // Add 2 characters based on timestamp for additional uniqueness
+    // This helps prevent collisions if multiple registrations happen simultaneously
+    const timestamp = Date.now();
+    const timestampSuffix = timestamp.toString(36).slice(-2).toUpperCase();
+    code += timestampSuffix;
+    
     return code;
 }
 
@@ -42,10 +62,12 @@ module.exports = async function (context, req) {
 
         // For registrations, orderID is not required
         const isFreeEvent = isRegistration || totalAmount === 0 || paymentStatus === 'FREE';
-        const finalOrderID = orderID || `REG-${Date.now()}`;
-
-        // Generate registration code for free events
+        
+        // Generate registration code for free events (this will be used as the registration ID)
         const registrationCode = isFreeEvent ? generateRegistrationCode() : null;
+        
+        // Use registrationCode as the ID for free events, otherwise use orderID or generate a fallback
+        const finalOrderID = isFreeEvent && registrationCode ? registrationCode : (orderID || `ORD-${Date.now()}`);
         
         // Generate QR code for free events
         let qrCodeDataURL = null;
@@ -143,15 +165,9 @@ module.exports = async function (context, req) {
             <div class="ticket-details">
                 <h3>${isFreeEvent ? 'Registration Summary' : 'Order Summary'}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">${isFreeEvent ? 'Registration ID:' : 'Order ID:'}</span>
-                    <span>${finalOrderID}</span>
+                    <span class="detail-label">${isFreeEvent ? 'Registration Code:' : 'Order ID:'}</span>
+                    <span style="${isFreeEvent ? 'font-weight: bold; font-size: 18px; font-family: monospace;' : ''}">${finalOrderID}</span>
                 </div>
-                ${isFreeEvent && registrationCode ? `
-                <div class="detail-row">
-                    <span class="detail-label">Registration Code:</span>
-                    <span style="font-weight: bold; font-size: 18px; font-family: monospace;">${registrationCode}</span>
-                </div>
-                ` : ''}
                 <div class="detail-row">
                     <span class="detail-label">Event:</span>
                     <span>${eventTitle}</span>
@@ -236,15 +252,9 @@ module.exports = async function (context, req) {
             <div class="order-details">
                 <h3>${isFreeEvent ? 'Registration Details' : 'Order Details'}</h3>
                 <div class="detail-row">
-                    <span class="detail-label">${isFreeEvent ? 'Registration ID:' : 'Order ID:'}</span>
-                    <span>${finalOrderID}</span>
+                    <span class="detail-label">${isFreeEvent ? 'Registration Code:' : 'Order ID:'}</span>
+                    <span style="${isFreeEvent ? 'font-weight: bold; font-size: 18px; font-family: monospace;' : ''}">${finalOrderID}</span>
                 </div>
-                ${isFreeEvent && registrationCode ? `
-                <div class="detail-row">
-                    <span class="detail-label">Registration Code:</span>
-                    <span style="font-weight: bold; font-size: 18px; font-family: monospace;">${registrationCode}</span>
-                </div>
-                ` : ''}
                 <div class="detail-row">
                     <span class="detail-label">Customer Name:</span>
                     <span>${customerName}</span>
@@ -333,6 +343,40 @@ module.exports = async function (context, req) {
         });
 
         context.log(`${isFreeEvent ? 'Host and admin' : 'Admin'} emails sent to: ${recipients.join(', ')}`);
+
+        // Store registration data in CosmosDB (for free events only)
+        if (isFreeEvent && registrationCode) {
+            try {
+                const registrationData = {
+                    registrationCode: registrationCode,
+                    orderID: finalOrderID,
+                    customerName: customerName,
+                    customerEmail: customerEmail,
+                    customerPhone: customerPhone || null,
+                    eventTitle: eventTitle,
+                    eventDate: eventDate,
+                    eventTime: eventTime,
+                    eventVenue: eventVenue,
+                    ticketQuantity: ticketQuantity,
+                    totalAmount: totalAmount || 0,
+                    paymentStatus: paymentStatus,
+                    isRegistration: isRegistration,
+                    hostEmail: hostEmail || null,
+                    qrCodeVerificationUrl: `${process.env.WEBSITE_URL || 'https://artloop.azurewebsites.net'}/verify?code=${registrationCode}`
+                };
+
+                const dbResult = await storeRegistration(registrationData);
+                if (dbResult.success) {
+                    context.log(`✅ Registration stored in CosmosDB: ${registrationCode}`);
+                } else {
+                    context.log.warn(`⚠️ Failed to store registration in CosmosDB: ${dbResult.error}`);
+                    // Don't fail the whole request if DB storage fails
+                }
+            } catch (dbError) {
+                context.log.error('❌ Error storing registration in CosmosDB:', dbError);
+                // Continue execution - DB storage is supplementary
+            }
+        }
 
         context.res = {
             status: 200,
