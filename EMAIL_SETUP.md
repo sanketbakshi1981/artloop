@@ -5,7 +5,7 @@ This guide will help you set up email notifications for ArtLoop payment confirma
 ## Overview
 
 When a customer completes a payment:
-1. The PayPal checkout component captures the payment
+1. The Stripe checkout component captures the payment
 2. The frontend calls an Azure Function
 3. The Azure Function sends emails to:
    - The customer (confirmation email)

@@ -69,58 +69,66 @@ To enable email submissions from the registration forms:
 
 See `website/README.md` for detailed setup instructions.
 
-## PayPal Payment Integration
+## Stripe Payment Integration
 
-The event ticket purchasing system is integrated with PayPal for secure payments.
+The event ticket purchasing system is integrated with Stripe for secure payments.
 
 ### Setup Instructions
 
-1. **Create a PayPal Developer Account**
-   - Go to [PayPal Developer](https://developer.paypal.com/)
-   - Sign in or create an account
-   - Navigate to "Dashboard" → "Apps & Credentials"
+1. **Create a Stripe Account**
+   - Go to [Stripe](https://stripe.com/)
+   - Sign up or log in to your account
+   - Navigate to the Dashboard
 
-2. **Get Your Client ID**
-   - In Sandbox mode (for testing):
-     - Copy the "Client ID" from your Sandbox app
+2. **Get Your API Keys**
+   - In the Stripe Dashboard, go to "Developers" → "API keys"
+   - In Test mode (for development):
+     - Copy the "Publishable key" (starts with `pk_test_`)
+     - Copy the "Secret key" (starts with `sk_test_`)
    - In Live mode (for production):
-     - Switch to "Live" tab and copy your live "Client ID"
+     - Switch to "Live" mode and copy your live keys
 
-3. **Configure Environment Variable**
+3. **Configure Environment Variables**
    - Create a `.env` file in the `website/` directory:
      ```bash
-     REACT_APP_PAYPAL_CLIENT_ID=your_paypal_client_id_here
+     REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
      ```
-   - For testing, use your Sandbox Client ID
-   - For production, use your Live Client ID
+   - Configure Azure Function App settings with your Secret key:
+     ```bash
+     STRIPE_SECRET_KEY=sk_test_your_secret_key_here
+     ```
 
 4. **Test the Integration**
    - Start the development server: `npm start`
    - Navigate to any event page
    - Click "Get Tickets" and complete the payment flow
-   - Use [PayPal Sandbox test accounts](https://developer.paypal.com/tools/sandbox/accounts/) for testing
+   - Use Stripe test cards: `4242 4242 4242 4242` (any future date, any CVC)
 
-### Testing with Sandbox
+### Testing with Stripe
 
-PayPal provides test buyer accounts for testing:
-- **Email**: sb-buyer@personal.example.com (check your sandbox accounts)
-- **Password**: Provided in PayPal Developer Dashboard
+Stripe provides test card numbers:
+- **Successful Payment**: 4242 4242 4242 4242
+- **Declined Payment**: 4000 0000 0000 0002
+- **Requires Authentication**: 4000 0025 0000 3155
+- Use any future expiration date and any 3-digit CVC
 
 ### Going Live
 
-1. Switch from Sandbox to Live credentials in your `.env` file
-2. Complete PayPal's business verification process
-3. Update `REACT_APP_PAYPAL_CLIENT_ID` with your live Client ID
+1. Switch from Test to Live credentials in your environment variables
+2. Complete Stripe's business verification process
+3. Update both the publishable and secret keys with live versions
 4. Rebuild and deploy your application
 
 ### Features
 
-- ✅ Secure PayPal payment processing
+- ✅ Secure Stripe payment processing
 - ✅ Real-time payment confirmation
 - ✅ Order details with customer information
 - ✅ Multiple ticket quantity support
 - ✅ Success/error handling
 - ✅ Payment status tracking
+- ✅ Support for multiple payment methods
+- ✅ Strong Customer Authentication (SCA) compliant
 
 ## Project Structure
 
