@@ -1,0 +1,199 @@
+.container {
+  width: 100%;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ifm-background-surface-color);
+}
+
+.table thead {
+  background: var(--ifm-color-emphasis-100);
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-800);
+  border-bottom: 2px solid var(--ifm-color-emphasis-300);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  vertical-align: top;
+}
+
+.table tbody tr:hover {
+  background: var(--ifm-color-emphasis-50);
+}
+
+.eventTitle {
+  min-width: 250px;
+}
+
+.titleCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--ifm-color-warning-light);
+  color: var(--ifm-color-warning-dark);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badgeFree {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--ifm-color-success-light);
+  color: var(--ifm-color-success-dark);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.dateTime {
+  min-width: 150px;
+}
+
+.dateTime small {
+  display: block;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.25rem;
+}
+
+.venue {
+  min-width: 200px;
+}
+
+.venue small {
+  display: block;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.price {
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+}
+
+.registrations {
+  text-align: center;
+}
+
+.count {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-dark);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.active {
+  background: var(--ifm-color-success-light);
+  color: var(--ifm-color-success-dark);
+}
+
+.status.cancelled {
+  background: var(--ifm-color-danger-light);
+  color: var(--ifm-color-danger-dark);
+}
+
+.status.completed {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-700);
+}
+
+.status.draft {
+  background: var(--ifm-color-warning-light);
+  color: var(--ifm-color-warning-dark);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.editButton,
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.editButton {
+  background: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-dark);
+}
+
+.editButton:hover {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background: var(--ifm-color-danger-light);
+  color: var(--ifm-color-danger-dark);
+}
+
+.deleteButton:hover {
+  background: var(--ifm-color-danger);
+  color: white;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1200px) {
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+}
