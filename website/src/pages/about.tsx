@@ -31,7 +31,7 @@ export default function About(): JSX.Element {
 
             <h3>Artists & Facilitators</h3>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
-              From singer-songwriters and small bands to spoken-word artists, meditation guides, and 
+              From singer-songwriters and small bands to spoken-word artists, theater plays and skits, meditation guides, and 
               yoga instructors—Art Loop helps creators:
             </p>
             <ul style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
