@@ -67,11 +67,11 @@ const config: Config = {
         src: 'img/ArtLoop-Logo-Small-Transparent.png',
       },
       items: [
-        {to: '/', label: 'Upcoming Event', position: 'left'},
+        {to: '/', label: 'Upcoming Events', position: 'left'},
+        {to: '/artists', label: 'Discover Artists', position: 'left'},
         {to: '/about', label: 'About Us', position: 'left'},
         {to: '/contact', label: 'Contact Us', position: 'left'},
         {to: '/register/host', label: 'Become a Host', position: 'left'},
-        {to: '/register/performer', label: 'Register as Performer', position: 'left'},
       ],
     },
     footer: {
@@ -88,6 +88,10 @@ const config: Config = {
               label: 'Browse Events',
               to: '/',
             },
+            {
+              label: 'Discover Artists',
+              to: '/artists',
+            },
           ],
         },
         {
@@ -96,6 +100,10 @@ const config: Config = {
             {
               label: 'Register as Performer',
               to: '/register/performer',
+            },
+            {
+              label: 'Discover Artists',
+              to: '/artists',
             },
           ],
         },
