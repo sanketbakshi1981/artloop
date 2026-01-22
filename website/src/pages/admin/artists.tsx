@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import type { Event } from '../../services/eventsService';
-import { eventsService } from '../../services/eventsService';
-import EventForm from '../../components/EventForm/index';
-import EventsList from '../../components/EventsList/index';
-import styles from './events.module.css';
+import type { Artist } from '../../services/artistsService';
+import { artistsService } from '../../services/artistsService';
+import ArtistForm from '../../components/ArtistForm/index';
+import ArtistsList from '../../components/ArtistsList/index';
+import styles from './events.module.css'; // Reuse events admin styles
 
-export default function AdminEvents(): React.JSX.Element {
-  const [events, setEvents] = useState<Event[]>([]);
+export default function AdminArtists(): React.JSX.Element {
+  const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [functionKey, setFunctionKey] = useState<string>('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  // Load events
-  const loadEvents = async () => {
+  // Load artists
+  const loadArtists = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await eventsService.getAllEvents({ status: 'active' });
-      setEvents(data);
+      const data = await artistsService.getAllArtists({ status: 'active' });
+      setArtists(data);
     } catch (err) {
-      setError(err.message || 'Failed to load events');
+      setError(err.message || 'Failed to load artists');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadEvents();
+    loadArtists();
   }, []);
 
   // Handle authentication
   const handleAuth = () => {
     if (functionKey.trim()) {
-      eventsService.setFunctionKey(functionKey.trim());
+      artistsService.setFunctionKey(functionKey.trim());
       setIsAuthenticated(true);
       localStorage.setItem('adminFunctionKey', functionKey.trim());
     }
@@ -48,7 +48,7 @@ export default function AdminEvents(): React.JSX.Element {
     const savedKey = localStorage.getItem('adminFunctionKey');
     if (savedKey) {
       setFunctionKey(savedKey);
-      eventsService.setFunctionKey(savedKey);
+      artistsService.setFunctionKey(savedKey);
       setIsAuthenticated(true);
     }
   }, []);
@@ -60,51 +60,51 @@ export default function AdminEvents(): React.JSX.Element {
     localStorage.removeItem('adminFunctionKey');
   };
 
-  // Handle create/update event
-  const handleSaveEvent = async (eventData: Event) => {
+  // Handle create/update artist
+  const handleSaveArtist = async (artistData: Artist) => {
     try {
       setError(null);
-      if (editingEvent?.id) {
-        await eventsService.updateEvent(editingEvent.id, eventData);
+      if (editingArtist?.id) {
+        await artistsService.updateArtist(editingArtist.id, artistData);
       } else {
-        await eventsService.createEvent(eventData);
+        await artistsService.createArtist(artistData);
       }
-      await loadEvents();
+      await loadArtists();
       setShowForm(false);
-      setEditingEvent(null);
+      setEditingArtist(null);
     } catch (err) {
-      setError(err.message || 'Failed to save event');
+      setError(err.message || 'Failed to save artist');
       throw err;
     }
   };
 
   // Handle edit
-  const handleEdit = (event: Event) => {
-    setEditingEvent(event);
+  const handleEdit = (artist: Artist) => {
+    setEditingArtist(artist);
     setShowForm(true);
   };
 
   // Handle delete
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to cancel this event?')) return;
+    if (!confirm('Are you sure you want to deactivate this artist?')) return;
 
     try {
       setError(null);
-      await eventsService.deleteEvent(id);
-      await loadEvents();
+      await artistsService.deleteArtist(id);
+      await loadArtists();
     } catch (err) {
-      setError(err.message || 'Failed to delete event');
+      setError(err.message || 'Failed to delete artist');
     }
   };
 
   // Authentication screen
   if (!isAuthenticated) {
     return (
-      <Layout title="Admin - Events Management" description="Manage ArtLoop events">
+      <Layout title="Admin - Artists Management" description="Manage ArtLoop artists">
         <div className={styles.container}>
           <div className={styles.authContainer}>
             <h1>🔐 Admin Authentication</h1>
-            <p>Enter your Azure Function Key to manage events</p>
+            <p>Enter your Azure Function Key to manage artists</p>
             <div className={styles.authForm}>
               <input
                 type="password"
@@ -119,7 +119,7 @@ export default function AdminEvents(): React.JSX.Element {
               </button>
             </div>
             <p className={styles.hint}>
-              Get your function key from: Azure Portal → Function App → events-manage → Function Keys
+              Get your function key from: Azure Portal → Function App → artists-manage → Function Keys
             </p>
           </div>
         </div>
@@ -128,15 +128,15 @@ export default function AdminEvents(): React.JSX.Element {
   }
 
   return (
-    <Layout title="Admin - Events Management" description="Manage ArtLoop events">
+    <Layout title="Admin - Artists Management" description="Manage ArtLoop artists">
       <div className={styles.container}>
         <div className={styles.breadcrumb}>
           <Link to="/admin">← Back to Dashboard</Link>
         </div>
         <div className={styles.header}>
           <div>
-            <h1>🎭 Events Management</h1>
-            <p>Manage all ArtLoop events - stored in Cosmos DB</p>
+            <h1>🎨 Artists Management</h1>
+            <p>Manage all ArtLoop artists - stored in Cosmos DB</p>
           </div>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
@@ -152,43 +152,43 @@ export default function AdminEvents(): React.JSX.Element {
         <div className={styles.actions}>
           <button
             onClick={() => {
-              setEditingEvent(null);
+              setEditingArtist(null);
               setShowForm(!showForm);
             }}
             className={styles.primaryButton}
           >
-            {showForm ? '✕ Cancel' : '+ Create New Event'}
+            {showForm ? '✕ Cancel' : '+ Create New Artist'}
           </button>
-          <button onClick={loadEvents} className={styles.secondaryButton}>
+          <button onClick={loadArtists} className={styles.secondaryButton}>
             🔄 Refresh
           </button>
         </div>
 
         {showForm && (
           <div className={styles.formSection}>
-            <h2>{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
-            <EventForm
-              initialData={editingEvent}
-              onSave={handleSaveEvent}
+            <h2>{editingArtist ? 'Edit Artist' : 'Create New Artist'}</h2>
+            <ArtistForm
+              initialData={editingArtist}
+              onSave={handleSaveArtist}
               onCancel={() => {
                 setShowForm(false);
-                setEditingEvent(null);
+                setEditingArtist(null);
               }}
             />
           </div>
         )}
 
         <div className={styles.listSection}>
-          <h2>All Events ({events.length})</h2>
+          <h2>All Artists ({artists.length})</h2>
           {loading ? (
-            <div className={styles.loading}>Loading events...</div>
-          ) : events.length === 0 ? (
+            <div className={styles.loading}>Loading artists...</div>
+          ) : artists.length === 0 ? (
             <div className={styles.empty}>
-              No events found. Create your first event!
+              No artists found. Create your first artist!
             </div>
           ) : (
-            <EventsList
-              events={events}
+            <ArtistsList
+              artists={artists}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />

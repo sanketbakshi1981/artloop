@@ -445,6 +445,211 @@ async function incrementEventRegistrationCount(eventId) {
     }
 }
 
+/**
+ * ====================
+ * ARTIST MANAGEMENT
+ * ====================
+ */
+
+/**
+ * Get artists container
+ */
+async function getArtistsContainer() {
+    try {
+        if (!database) {
+            await initializeCosmosDB();
+        }
+
+        const containerId = process.env.COSMOS_DB_ARTISTS_CONTAINER || 'artists';
+        
+        // Create artists container if it doesn't exist
+        const { container } = await database.containers.createIfNotExists({
+            id: containerId,
+            partitionKey: {
+                paths: ['/id'],
+                kind: 'Hash'
+            }
+        });
+
+        console.log(`✅ Artists container ready: ${containerId}`);
+        return container;
+    } catch (error) {
+        console.error('❌ Error getting artists container:', error);
+        throw error;
+    }
+}
+
+/**
+ * Store artist data in CosmosDB
+ * @param {Object} artistData - Artist data to store
+ * @returns {Promise<Object>} Created item with metadata
+ */
+async function storeArtist(artistData) {
+    try {
+        const artistsContainer = await getArtistsContainer();
+
+        // Generate slug from name if not provided
+        const slug = artistData.slug || artistData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+        // Add metadata
+        const item = {
+            id: artistData.id ? artistData.id.toString() : Date.now().toString(),
+            ...artistData,
+            slug: slug,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: artistData.status || 'active', // active, inactive
+            rating: artistData.rating || 0,
+            totalReviews: artistData.totalReviews || 0
+        };
+
+        const { resource: createdItem } = await artistsContainer.items.create(item);
+        console.log(`✅ Artist stored in CosmosDB: ${item.id} - ${item.name}`);
+        return { success: true, item: createdItem };
+    } catch (error) {
+        console.error('❌ Error storing artist in CosmosDB:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Retrieve artist by ID
+ * @param {string|number} artistId - Artist ID to look up
+ * @returns {Promise<Object>} Artist data or null
+ */
+async function getArtist(artistId) {
+    try {
+        const artistsContainer = await getArtistsContainer();
+        const id = artistId.toString();
+        
+        const { resource: item } = await artistsContainer.item(id, id).read();
+        return { success: true, item };
+    } catch (error) {
+        if (error.code === 404) {
+            console.log(`Artist not found: ${artistId}`);
+            return { success: false, error: 'Artist not found' };
+        }
+        console.error('❌ Error retrieving artist from CosmosDB:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Get all artists with optional filtering
+ * @param {Object} filters - Optional filters (status, featured, etc.)
+ * @returns {Promise<Array>} List of artists
+ */
+async function getAllArtists(filters = {}) {
+    try {
+        const artistsContainer = await getArtistsContainer();
+        
+        let querySpec = {
+            query: 'SELECT * FROM c WHERE c.status = @status ORDER BY c.name ASC',
+            parameters: [
+                {
+                    name: '@status',
+                    value: filters.status || 'active'
+                }
+            ]
+        };
+
+        // If filtering for featured artists only
+        if (filters.featured) {
+            querySpec = {
+                query: 'SELECT * FROM c WHERE c.status = @status AND c.featured = true ORDER BY c.name ASC',
+                parameters: [
+                    {
+                        name: '@status',
+                        value: 'active'
+                    }
+                ]
+            };
+        }
+
+        const { resources: items } = await artistsContainer.items.query(querySpec).fetchAll();
+        return { success: true, items, count: items.length };
+    } catch (error) {
+        console.error('❌ Error querying artists:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Search artists by keyword
+ * @param {string} searchTerm - Search term for name, talents, or bio
+ * @returns {Promise<Array>} List of matching artists
+ */
+async function searchArtists(searchTerm) {
+    try {
+        const artistsContainer = await getArtistsContainer();
+        
+        const querySpec = {
+            query: `SELECT * FROM c WHERE c.status = 'active' AND (
+                CONTAINS(LOWER(c.name), LOWER(@searchTerm)) OR
+                CONTAINS(LOWER(c.bio), LOWER(@searchTerm)) OR
+                CONTAINS(LOWER(c.location), LOWER(@searchTerm))
+            ) ORDER BY c.name ASC`,
+            parameters: [
+                {
+                    name: '@searchTerm',
+                    value: searchTerm
+                }
+            ]
+        };
+
+        const { resources: items } = await artistsContainer.items.query(querySpec).fetchAll();
+        return { success: true, items, count: items.length };
+    } catch (error) {
+        console.error('❌ Error searching artists:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Update artist data
+ * @param {string|number} artistId - Artist ID
+ * @param {Object} updates - Fields to update
+ * @returns {Promise<Object>} Updated item
+ */
+async function updateArtist(artistId, updates) {
+    try {
+        const artistsContainer = await getArtistsContainer();
+        const id = artistId.toString();
+
+        // Get existing item
+        const { resource: existingItem } = await artistsContainer.item(id, id).read();
+
+        // Merge updates
+        const updatedItem = {
+            ...existingItem,
+            ...updates,
+            id: id, // Ensure id doesn't change
+            updatedAt: new Date().toISOString()
+        };
+
+        const { resource: result } = await artistsContainer.item(id, id).replace(updatedItem);
+        console.log(`✅ Artist updated in CosmosDB: ${id}`);
+        return { success: true, item: result };
+    } catch (error) {
+        console.error('❌ Error updating artist in CosmosDB:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Delete artist (soft delete by setting status to 'inactive')
+ * @param {string|number} artistId - Artist ID
+ * @returns {Promise<Object>} Result
+ */
+async function deleteArtist(artistId) {
+    try {
+        return await updateArtist(artistId, { status: 'inactive' });
+    } catch (error) {
+        console.error('❌ Error deleting artist:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 module.exports = {
     initializeCosmosDB,
     // Registration functions
@@ -462,5 +667,13 @@ module.exports = {
     updateEvent,
     deleteEvent,
     incrementEventRegistrationCount,
-    getEventsContainer
+    getEventsContainer,
+    // Artist management functions
+    storeArtist,
+    getArtist,
+    getAllArtists,
+    searchArtists,
+    updateArtist,
+    deleteArtist,
+    getArtistsContainer
 };

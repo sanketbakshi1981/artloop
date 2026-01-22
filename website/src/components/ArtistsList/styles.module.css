@@ -1,0 +1,188 @@
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ifm-background-surface-color);
+}
+
+.table thead {
+  background: var(--ifm-color-emphasis-100);
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-800);
+  border-bottom: 2px solid var(--ifm-color-emphasis-300);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: var(--ifm-color-emphasis-50);
+}
+
+.idCell {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-600);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 250px;
+}
+
+.artistInfo div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.artistInfo small {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.8rem;
+}
+
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.talents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 200px;
+}
+
+.talent {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-dark);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.moreTalents {
+  font-size: 0.7rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.rating small {
+  color: var(--ifm-color-emphasis-600);
+  font-weight: normal;
+}
+
+.featuredBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: var(--ifm-color-warning-light);
+  color: var(--ifm-color-warning-dark);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.notFeatured {
+  color: var(--ifm-color-emphasis-400);
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.active {
+  background: var(--ifm-color-success-light);
+  color: var(--ifm-color-success-dark);
+}
+
+.status.inactive {
+  background: var(--ifm-color-danger-light);
+  color: var(--ifm-color-danger-dark);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editButton,
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.editButton {
+  background: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-dark);
+}
+
+.editButton:hover {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background: var(--ifm-color-danger-light);
+  color: var(--ifm-color-danger-dark);
+}
+
+.deleteButton:hover {
+  background: var(--ifm-color-danger);
+  color: white;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1200px) {
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+}
