@@ -136,7 +136,7 @@ export default function AdminArtists(): React.JSX.Element {
         <div className={styles.header}>
           <div>
             <h1>🎨 Artists Management</h1>
-            <p>Manage all ArtLoop artists - stored in Cosmos DB</p>
+            <p>Manage all ArtLoop artists</p>
           </div>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout

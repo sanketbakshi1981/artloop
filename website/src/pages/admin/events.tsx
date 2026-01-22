@@ -136,7 +136,7 @@ export default function AdminEvents(): React.JSX.Element {
         <div className={styles.header}>
           <div>
             <h1>🎭 Events Management</h1>
-            <p>Manage all ArtLoop events - stored in Cosmos DB</p>
+            <p>Manage all ArtLoop events</p>
           </div>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
