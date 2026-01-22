@@ -128,12 +128,24 @@ class EventsService {
         body: JSON.stringify(eventData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to create event: ${response.statusText}`);
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data?.error || data?.message || `Failed to create event: ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      if (!data) {
+        throw new Error('Empty response from server');
+      }
+
       return data.event || data;
     } catch (error) {
       console.error('Error creating event:', error);
@@ -158,12 +170,24 @@ class EventsService {
         body: JSON.stringify(updates),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to update event: ${response.statusText}`);
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data?.error || data?.message || `Failed to update event: ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      if (!data) {
+        throw new Error('Empty response from server');
+      }
+
       return data.event || data;
     } catch (error) {
       console.error('Error updating event:', error);
@@ -184,9 +208,18 @@ class EventsService {
         method: 'DELETE',
       });
 
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to delete event: ${response.statusText}`);
+        const errorMessage = data?.error || data?.message || `Failed to delete event: ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
       return true;

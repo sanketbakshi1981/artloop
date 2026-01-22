@@ -127,12 +127,24 @@ class ArtistsService {
         body: JSON.stringify(artistData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to create artist: ${response.statusText}`);
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data?.error || data?.message || `Failed to create artist: ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      if (!data) {
+        throw new Error('Empty response from server');
+      }
+
       return data.artist || data;
     } catch (error) {
       console.error('Error creating artist:', error);
@@ -157,12 +169,24 @@ class ArtistsService {
         body: JSON.stringify(updates),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to update artist: ${response.statusText}`);
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data?.error || data?.message || `Failed to update artist: ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      if (!data) {
+        throw new Error('Empty response from server');
+      }
+
       return data.artist || data;
     } catch (error) {
       console.error('Error updating artist:', error);
@@ -183,9 +207,18 @@ class ArtistsService {
         method: 'DELETE',
       });
 
+      // Get response text first, then try to parse as JSON
+      const responseText = await response.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        data = null;
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to delete artist: ${response.statusText}`);
+        const errorMessage = data?.error || data?.message || `Failed to delete artist: ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
       return true;
