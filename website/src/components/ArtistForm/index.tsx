@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Artist } from '../../services/artistsService';
 import styles from './styles.module.css';
 
@@ -23,6 +23,24 @@ export default function ArtistForm({ initialData, onSave, onCancel }: ArtistForm
     socialLinks: initialData?.socialLinks || {},
     featured: initialData?.featured || false,
   });
+
+  // Update form when initialData changes (e.g., when editing a different artist)
+  useEffect(() => {
+    setFormData({
+      name: initialData?.name || '',
+      profileImage: initialData?.profileImage || '',
+      talents: initialData?.talents || [],
+      bio: initialData?.bio || '',
+      fullBio: initialData?.fullBio || '',
+      location: initialData?.location || '',
+      rating: initialData?.rating || 0,
+      totalReviews: initialData?.totalReviews || 0,
+      priceRange: initialData?.priceRange || '',
+      availability: initialData?.availability || '',
+      socialLinks: initialData?.socialLinks || {},
+      featured: initialData?.featured || false,
+    });
+  }, [initialData]);
 
   const [talentInput, setTalentInput] = useState('');
   const [saving, setSaving] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Event } from '../../services/eventsService';
 import styles from './styles.module.css';
 
@@ -29,6 +29,30 @@ export default function EventForm({ initialData, onSave, onCancel }: EventFormPr
     inviteOnly: initialData?.inviteOnly || false,
     inviteCode: initialData?.inviteCode || '',
   });
+
+  // Update form when initialData changes (e.g., when editing a different event)
+  useEffect(() => {
+    setFormData({
+      title: initialData?.title || '',
+      date: initialData?.date || '',
+      time: initialData?.time || '',
+      venue: initialData?.venue || '',
+      venueAddress: initialData?.venueAddress || '',
+      performer: initialData?.performer || '',
+      performerBio: initialData?.performerBio || '',
+      description: initialData?.description || '',
+      fullDescription: initialData?.fullDescription || '',
+      image: initialData?.image || '',
+      price: initialData?.price || '$0',
+      capacity: initialData?.capacity || '50 guests',
+      dresscode: initialData?.dresscode || 'Casual',
+      includes: initialData?.includes || [],
+      hostEmail: initialData?.hostEmail || '',
+      isFree: initialData?.isFree || false,
+      inviteOnly: initialData?.inviteOnly || false,
+      inviteCode: initialData?.inviteCode || '',
+    });
+  }, [initialData]);
 
   const [includesInput, setIncludesInput] = useState('');
   const [saving, setSaving] = useState(false);
