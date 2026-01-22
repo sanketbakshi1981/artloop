@@ -14,6 +14,23 @@
  * 2. Run: node migrate-events-to-cosmosdb.js
  */
 
+const fs = require('fs');
+const path = require('path');
+
+// Load environment variables from local.settings.json
+const localSettingsPath = path.join(__dirname, 'local.settings.json');
+if (fs.existsSync(localSettingsPath)) {
+    const localSettings = JSON.parse(fs.readFileSync(localSettingsPath, 'utf8'));
+    if (localSettings.Values) {
+        Object.entries(localSettings.Values).forEach(([key, value]) => {
+            if (!process.env[key]) {
+                process.env[key] = value;
+            }
+        });
+    }
+    console.log('✅ Loaded environment variables from local.settings.json\n');
+}
+
 const { storeEvent } = require('./shared/cosmosdb');
 
 // Static events data from website/src/data/eventsData.ts
@@ -98,7 +115,9 @@ async function migrateEvents() {
     for (const [id, event] of Object.entries(eventsData)) {
         try {
             console.log(`📝 Migrating event ${id}: ${event.title}...`);
-            const result = await storeEvent(event);
+            // Ensure id is a string for Cosmos DB
+            const eventWithStringId = { ...event, id: String(event.id) };
+            const result = await storeEvent(eventWithStringId);
 
             if (result.success) {
                 console.log(`   ✅ Success!`);

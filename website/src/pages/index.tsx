@@ -1,9 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
-import { getAllEvents, Event, isInviteOnly } from '../data/eventsData';
+import { eventsService, Event } from '../services/eventsService';
+
+/**
+ * Parse date string to Date object for sorting
+ */
+function parseEventDate(dateStr: string): Date {
+  // Handle formats like "January 18, 2026" or "Feb 20th 2026"
+  const cleaned = dateStr.replace(/(\d+)(st|nd|rd|th)/, '$1');
+  const parsed = new Date(cleaned);
+  return isNaN(parsed.getTime()) ? new Date(0) : parsed;
+}
+
+/**
+ * Check if event is invite-only
+ */
+function isInviteOnly(event: Event): boolean {
+  return event.inviteOnly === true;
+}
 
 function EventCard({ event }: { event: Event }) {
   const displayPrice = isInviteOnly(event) ? 'Invite-Only' : event.price;
@@ -68,7 +85,38 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
-  const upcomingEvents = getAllEvents();
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        setLoading(true);
+        const events = await eventsService.getAllEvents({ status: 'active' });
+        
+        // Sort by date (earliest first) and take top 3
+        const sortedEvents = events
+          .filter(event => {
+            const eventDate = parseEventDate(event.date);
+            return eventDate >= new Date(); // Only future events
+          })
+          .sort((a, b) => parseEventDate(a.date).getTime() - parseEventDate(b.date).getTime())
+          .slice(0, 3);
+        
+        setUpcomingEvents(sortedEvents);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch events:', err);
+        setError('Unable to load events');
+        setUpcomingEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchEvents();
+  }, []);
   
   return (
     <Layout
@@ -79,11 +127,19 @@ export default function Home(): JSX.Element {
         <section className={styles.eventsSection}>
           <div className="container">
             <h2 className={styles.sectionTitle}>Upcoming Events</h2>
-            <div className={styles.eventsGrid}>
-              {upcomingEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
+            {loading ? (
+              <div className={styles.loadingState}>Loading events...</div>
+            ) : error ? (
+              <div className={styles.errorState}>{error}</div>
+            ) : upcomingEvents.length === 0 ? (
+              <div className={styles.emptyState}>No upcoming events at the moment. Check back soon!</div>
+            ) : (
+              <div className={styles.eventsGrid}>
+                {upcomingEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
