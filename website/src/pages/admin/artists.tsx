@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import type { Artist } from '../../services/artistsService';
@@ -15,6 +15,7 @@ export default function AdminArtists(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Load artists
   const loadArtists = async () => {
@@ -82,6 +83,10 @@ export default function AdminArtists(): React.JSX.Element {
   const handleEdit = (artist: Artist) => {
     setEditingArtist(artist);
     setShowForm(true);
+    // Scroll to form after state update
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   // Handle delete
@@ -165,9 +170,10 @@ export default function AdminArtists(): React.JSX.Element {
         </div>
 
         {showForm && (
-          <div className={styles.formSection}>
+          <div className={styles.formSection} ref={formRef}>
             <h2>{editingArtist ? 'Edit Artist' : 'Create New Artist'}</h2>
             <ArtistForm
+              key={editingArtist?.id || 'new'}
               initialData={editingArtist}
               onSave={handleSaveArtist}
               onCancel={() => {

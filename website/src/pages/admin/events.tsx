@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import type { Event } from '../../services/eventsService';
@@ -15,6 +15,7 @@ export default function AdminEvents(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Load events
   const loadEvents = async () => {
@@ -82,6 +83,10 @@ export default function AdminEvents(): React.JSX.Element {
   const handleEdit = (event: Event) => {
     setEditingEvent(event);
     setShowForm(true);
+    // Scroll to form after state update
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   // Handle delete
@@ -165,9 +170,10 @@ export default function AdminEvents(): React.JSX.Element {
         </div>
 
         {showForm && (
-          <div className={styles.formSection}>
+          <div className={styles.formSection} ref={formRef}>
             <h2>{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
             <EventForm
+              key={editingEvent?.id || 'new'}
               initialData={editingEvent}
               onSave={handleSaveEvent}
               onCancel={() => {
